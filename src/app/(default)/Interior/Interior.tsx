@@ -639,16 +639,14 @@ export default function InteriorModel({
         temps.map((temp) => {
           console.log(temp);
           return (
-            <Html>
+            <Html
               position={[temp.x, 10, temp.z]}
               //rotation={[0, Math.PI / 2, Math.PI]}
               key={temp.id}
-              children=
-              {
-                <span className="font-cairo text-lg whitespace-nowrap">
-                  {temp.value}
-                </span>
-              }
+            >
+              <span className="font-cairo text-lg whitespace-nowrap">
+                {temp.value}
+              </span>
             </Html>
           );
         })}
