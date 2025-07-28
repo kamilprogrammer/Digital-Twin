@@ -1,6 +1,7 @@
+@import "tailwindcss/preflight";
+@tailwind utilities;
 @import "tailwindcss";
 @import "tw-animate-css";
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -119,4 +120,15 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@font-face {
+  font-family: "Cairo";
+  src: url("/cairo.ttf");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@theme {
+  --font-cairo: "Cairo", sans-serif;
 }
