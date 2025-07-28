@@ -167,7 +167,7 @@ export default function Scene({
             font="/cairo.ttf"
             lineHeight={1.2}
           >
-            {"Digital Twin Visualization"}
+            {"Digital Twin \nVisualization"}
           </Text>
           <Text
             position={[-196, 46, -550]}
