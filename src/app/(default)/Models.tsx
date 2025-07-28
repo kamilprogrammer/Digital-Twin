@@ -12,7 +12,17 @@ export function GLTFModels({
   showStream,
   setShowStream,
   setStreamValue,
-}: any) {
+}: {
+  heatMap: boolean;
+  setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
+  showInterior: boolean;
+  setShowInterior: React.Dispatch<React.SetStateAction<boolean>>;
+  isTransitioning: boolean;
+  setIsTransitioning: (b: boolean) => void;
+  showStream: boolean;
+  setShowStream: React.Dispatch<React.SetStateAction<boolean>>;
+  setStreamValue: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const dubai = useGLTF("/dubai.glb");
   const drone = useGLTF("/drone.glb");
 

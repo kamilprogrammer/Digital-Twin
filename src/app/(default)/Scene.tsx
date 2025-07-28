@@ -12,6 +12,10 @@ import DroneFollower from "./Camera/Drone";
 import InteriorModel from "./Interior/Interior";
 import { folder, useControls } from "leva";
 import "../globals.css";
+import {
+  GLTF,
+  PointerLockControls as PointerLockControlsImpl,
+} from "three-stdlib";
 
 export default function Scene({
   dubai,
@@ -26,8 +30,8 @@ export default function Scene({
   isTransitioning,
   setIsTransitioning,
 }: {
-  dubai: any;
-  drone: any;
+  dubai: GLTF;
+  drone: GLTF;
   showStream: boolean;
   heatMap: boolean;
   setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
@@ -42,7 +46,7 @@ export default function Scene({
   //const DroneRef = useRef<THREE.Object3D | null>(null);
   const buttonRef = useRef<THREE.Mesh | null>(null);
   const lookingRef = useRef(false);
-  const cameraRef = useRef<any>(null);
+  const cameraRef = useRef<PointerLockControlsImpl>(null);
   const DroneRef = useRef<THREE.Object3D | null>(null);
   const [isLookingAtButton, setIsLookingAtButton] = useState(false);
 
@@ -111,7 +115,7 @@ export default function Scene({
     [showInterior]
   );
 
-  const { ShowDrone }: any = useControls(
+  const { ShowDrone } = useControls(
     {
       Drone: folder({
         ShowDrone: {
@@ -141,7 +145,7 @@ export default function Scene({
                 size="lg"
                 className="justify-center items-center -ml-28 -mt-16"
               >
-                🏢 Kamel Rifai's Building
+                {"🏢 Kamel Rifai's Building"}
               </Button>
             </Html>
           </mesh>

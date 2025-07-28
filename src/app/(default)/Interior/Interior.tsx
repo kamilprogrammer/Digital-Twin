@@ -174,7 +174,11 @@ export default function InteriorModel({
     }
   });
 
-  const onUpdatePosition = (uniqueId: string, pos: any, rot: any) => {
+  const onUpdatePosition = (
+    uniqueId: string,
+    pos: { x: number; y: number; z: number },
+    rot: { x: number; y: number; z: number }
+  ) => {
     {
       /*console.log("function!");
     console.log("Updated Rotation:", rot);
@@ -635,16 +639,17 @@ export default function InteriorModel({
         temps.map((temp) => {
           console.log(temp);
           return (
-            <Html
+            <Html>
               position={[temp.x, 10, temp.z]}
               //rotation={[0, Math.PI / 2, Math.PI]}
               key={temp.id}
-              children={
+              children=
+              {
                 <span className="font-cairo text-lg whitespace-nowrap">
                   {temp.value}
                 </span>
               }
-            />
+            </Html>
           );
         })}
       {devices

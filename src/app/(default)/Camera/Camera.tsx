@@ -1,7 +1,9 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { PointerLockControls } from "@react-three/drei";
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
+import { PointerLockControls as PointerLockControlsImpl } from "three-stdlib"; // <-- Import actual class
+import { RefObject } from "react";
+import { PointerLockControls } from "@react-three/drei";
 
 export default function Camera({
   interior,
@@ -9,13 +11,13 @@ export default function Camera({
   heatMap,
 }: {
   interior: boolean;
-  cameraRef: React.RefObject<any>;
+  cameraRef: RefObject<PointerLockControlsImpl | null>;
   heatMap: boolean;
 }) {
   const { camera } = useThree();
   const direction = new THREE.Vector3();
   const keys = useRef<{ [key: string]: boolean }>({});
-  let speed: number = interior ? 1.5 : 1.5;
+  const speed = interior ? 1.5 : 1.5;
 
   useEffect(() => {
     const down = (e: KeyboardEvent) =>

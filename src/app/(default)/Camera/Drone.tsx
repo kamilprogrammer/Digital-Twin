@@ -1,12 +1,13 @@
 import { useFrame } from "@react-three/fiber";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { GLTF } from "three-stdlib";
 
 export default function DroneFollower({
   gltf,
   ref,
 }: {
-  gltf: any;
+  gltf: GLTF;
   ref: React.RefObject<THREE.Object3D | null>;
 }) {
   const { camera } = useThree();
