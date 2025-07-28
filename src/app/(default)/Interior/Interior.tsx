@@ -8,10 +8,11 @@ import * as THREE from "three";
 import { temps } from "../Devices/HeatMap";
 import AC from "../Devices/AC";
 import type { AcType } from "../../../types/AcType";
-import { useControls, folder } from "leva";
+import { useControls, folder, Leva } from "leva";
 import "../../globals.css";
 
 export default function InteriorModel({
+  showInterior,
   showStream,
   heatMap,
   setHeatMap,
@@ -19,6 +20,7 @@ export default function InteriorModel({
   setStreamValue,
   setShowInterior,
 }: {
+  showInterior: boolean;
   showStream: boolean;
   heatMap: boolean;
   setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,7 +33,6 @@ export default function InteriorModel({
   const [isDeveloping, setIsDeveloping] = useState(false);
   const [devices, setDevices] = useState<CameraType[]>([]);
   const InteriorRef = useRef<THREE.Object3D | null>(null);
-  console.log(interior.scene);
 
   // Debug Controls
   const { ShowAC } = useControls({

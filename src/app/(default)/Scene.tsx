@@ -210,6 +210,7 @@ export default function Scene({
       {showInterior && (
         <Suspense fallback={null}>
           <InteriorModel
+            showInterior={showInterior}
             showStream={showStream}
             heatMap={heatMap}
             setHeatMap={setHeatMap}

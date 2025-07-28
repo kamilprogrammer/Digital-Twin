@@ -21,17 +21,16 @@ export default function Page() {
     <>
       {/* Leva Debug Panel */}
       <Leva
-        collapsed={false}
-        theme={{
-          /*fontSizes: {
-            root: "16px", // default is 13px
-            toolTip: "12px",
-          },*/
-          sizes: {
-            rootWidth: "420px",
-            monitorHeight: "80px",
-          },
-        }}
+        //hidden={showInterior}
+        collapsed={true}
+        theme={
+          {
+            /*fontSizes: {
+              root: "16px", // default is 13px
+              toolTip: "12px",
+              },*/
+          }
+        }
       />
       {showStream && (
         <motion.div
