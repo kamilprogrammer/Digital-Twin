@@ -49,3 +49,6 @@ public/*.glb
 public/*.mp4
 public/stream
 node_modules
+
+# Local Netlify folder
+.netlify

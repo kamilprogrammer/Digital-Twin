@@ -1,14 +1,15 @@
 "use client";
 import "./globals.css";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
 import { useState } from "react";
-import Scene from "./(default)/Scene";
 import { motion } from "framer-motion";
-import { Button } from "../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Leva } from "leva";
 import { HeatLayer } from "./(default)/Devices/HeatMap";
 import { GLTFModels } from "./(default)/Models";
+import Sidebar from "./(default)/sidebar/sidebar";
+import router from "next/router";
+import OutSidebar from "./(default)/sidebar/out-siderbar";
 
 export default function Page() {
   const [showInterior, setShowInterior] = useState(false);
@@ -68,33 +69,72 @@ export default function Page() {
           </div>
         </motion.div>
       )}
-      {isTransitioning && (
+      {/*{isTransiti  oning && (
         <>
           <div className="fixed top-0 left-0 h-full w-1/2 z-50 bg-blue-200 animate-slideInLeft" />
           <div className="fixed top-0 right-0 h-full w-1/2 z-50 bg-blue-200 animate-slideInRight" />
         </>
-      )}
-      <div className="pointer-events-none fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-2xl z-50">
-        +
-      </div>
+      )}*/}
 
-      <div className="fixed h-screen w-screen top-0 left-0">
-        <Canvas camera={{ position: [0, 75, 75] }}>
-          <GLTFModels
-            heatMap={heatMap}
-            setHeatMap={setHeatMap}
-            showInterior={showInterior}
-            setShowInterior={setShowInterior}
-            isTransitioning={isTransitioning}
-            setIsTransitioning={setIsTransitioning}
-            showStream={showStream}
-            setShowStream={setShowStream}
-            setStreamValue={setStreamValue}
-          />
-        </Canvas>
-        <div className="absolute top-0 left-0 w-screen h-screen pointer-events-none z-10">
-          {heatMap && <HeatLayer />}
+      <div className="flex fixed h-screen w-screen p-2 bg-gray-400 overflow-x-hidden overflow-y-hidden top-0 left-0">
+        <div className="w-[12vw] p-2">
+          {showInterior ? (
+            <Sidebar
+              showInterior={showInterior}
+              setShowInterior={setShowInterior}
+              building="Building 1"
+              floors={[
+                "Floor 1",
+                "Floor 2",
+                "Floor 3",
+                "Floor 4",
+                "Floor 5",
+                "Floor 6",
+              ]}
+              onNavigate={(path) => {
+                router.push(path);
+              }}
+            />
+          ) : (
+            <OutSidebar
+              showInterior={showInterior}
+              setShowInterior={setShowInterior}
+              building="Building 1"
+              floors={[
+                "Floor 1",
+                "Floor 2",
+                "Floor 3",
+                "Floor 4",
+                "Floor 5",
+                "Floor 6",
+              ]}
+              onNavigate={(path) => {
+                router.push(path);
+              }}
+            />
+          )}
         </div>
+        <div className="flex-1">
+          <div className="pointer-events-none top-1/2 right-[44vw] fixed text-white text-2xl z-50">
+            +
+          </div>
+          <Canvas camera={{ position: [0, 75, 75] }} className="rounded-xl">
+            <GLTFModels
+              heatMap={heatMap}
+              setHeatMap={setHeatMap}
+              showInterior={showInterior}
+              setShowInterior={setShowInterior}
+              isTransitioning={isTransitioning}
+              setIsTransitioning={setIsTransitioning}
+              showStream={showStream}
+              setShowStream={setShowStream}
+              setStreamValue={setStreamValue}
+            />
+          </Canvas>
+        </div>
+      </div>
+      <div className="absolute top-0 left-0 w-screen h-screen pointer-events-none z-10">
+        {heatMap && <HeatLayer />}
       </div>
     </>
   );
