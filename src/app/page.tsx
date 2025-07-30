@@ -10,6 +10,10 @@ import { GLTFModels } from "./(default)/Models";
 import Sidebar from "./(default)/sidebar/sidebar";
 import router from "next/router";
 import OutSidebar from "./(default)/sidebar/out-siderbar";
+import { supabase } from "@/supabase-digital-twin";
+import { useEffect } from "react";
+import { City, Floor, Building } from "@/types";
+import CityDialog from "./(default)/sidebar/dialog";
 
 export default function Page() {
   const [showInterior, setShowInterior] = useState(false);
@@ -18,8 +22,26 @@ export default function Page() {
   const [streamValue, setStreamValue] = useState("in");
   const [heatMap, setHeatMap] = useState(false);
 
+  const [buildings, setBuildings] = useState<Building[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
+  const [city, setCity] = useState<City | null>(null);
+
+  // Fetching Data from Supabase (Baas)
+  useEffect(() => {
+    const fetchBuildings = async () => {
+      const { data, error } = await supabase.from("Buildings").select("*");
+      if (error) {
+        console.error("Error fetching buildings:", error);
+      } else {
+        setBuildings(data);
+      }
+    };
+    fetchBuildings();
+  }, []);
+
   return (
     <>
+      <CityDialog city={city} setCity={setCity} />
       {/* Leva Debug Panel */}
       <Leva
         //hidden={showInterior}
@@ -97,17 +119,9 @@ export default function Page() {
             />
           ) : (
             <OutSidebar
-              showInterior={showInterior}
               setShowInterior={setShowInterior}
-              building="Building 1"
-              floors={[
-                "Floor 1",
-                "Floor 2",
-                "Floor 3",
-                "Floor 4",
-                "Floor 5",
-                "Floor 6",
-              ]}
+              city={cities[0]}
+              buildings={buildings}
               onNavigate={(path) => {
                 router.push(path);
               }}

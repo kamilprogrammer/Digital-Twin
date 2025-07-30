@@ -55,6 +55,9 @@ export default function Camera({
         direction.y -= 1;
       }
     }
+    if (keys.current["c"] && !heatMap) {
+      console.log(camera.position);
+    }
 
     // Border
     if (interior) {
