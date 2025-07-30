@@ -18,6 +18,7 @@ import {
 } from "three-stdlib";
 
 export default function Scene({
+  lockEnabled,
   dubai,
   drone,
   showStream,
@@ -30,6 +31,7 @@ export default function Scene({
   isTransitioning,
   setIsTransitioning,
 }: {
+  lockEnabled: boolean;
   dubai: GLTF;
   drone: GLTF;
   showStream: boolean;
@@ -193,7 +195,13 @@ export default function Scene({
         </>
       )}
       {/* Drone */}
-      <Camera interior={showInterior} cameraRef={cameraRef} heatMap={heatMap} />
+      {lockEnabled && (
+        <Camera
+          interior={showInterior}
+          cameraRef={cameraRef}
+          heatMap={heatMap}
+        />
+      )}
 
       {ShowDrone && !showInterior && (
         <Float

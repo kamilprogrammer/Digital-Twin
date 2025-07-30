@@ -1,14 +1,11 @@
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { City } from "@/types";
 import { useEffect } from "react";
@@ -38,7 +35,6 @@ export default function CityDialog({
   }, []);
   return (
     <Dialog open={city === null}>
-      <DialogTrigger>Open</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Select City</DialogTitle>

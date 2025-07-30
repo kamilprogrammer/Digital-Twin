@@ -30,12 +30,14 @@ export default function CitiesDropdown({
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Cities</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {cities.map((city) => (
+        {cities.map((cityOption) => (
           <DropdownMenuCheckboxItem
-            key={city.id}
-            checked={city?.id === city.id}
-            onCheckedChange={() => setCity(city)}
-          ></DropdownMenuCheckboxItem>
+            key={cityOption.id}
+            checked={cityOption.id === city?.id}
+            onCheckedChange={() => setCity(cityOption)}
+          >
+            {cityOption.title}
+          </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

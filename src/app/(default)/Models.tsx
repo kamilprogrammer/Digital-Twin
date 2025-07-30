@@ -3,6 +3,8 @@ import { useGLTF } from "@react-three/drei";
 import Scene from "./Scene";
 
 export function GLTFModels({
+  lockEnabled,
+  city,
   heatMap,
   setHeatMap,
   showInterior,
@@ -13,6 +15,8 @@ export function GLTFModels({
   setShowStream,
   setStreamValue,
 }: {
+  lockEnabled: boolean;
+  city: string | null;
   heatMap: boolean;
   setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
   showInterior: boolean;
@@ -23,7 +27,7 @@ export function GLTFModels({
   setShowStream: React.Dispatch<React.SetStateAction<boolean>>;
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const dubai = useGLTF("/dubai.glb");
+  const dubai = useGLTF(`/${city}.glb`);
   const drone = useGLTF("/drone.glb");
 
   return (
@@ -39,6 +43,7 @@ export function GLTFModels({
       showStream={showStream}
       setShowStream={setShowStream}
       setStreamValue={setStreamValue}
+      lockEnabled={lockEnabled}
     />
   );
 }
