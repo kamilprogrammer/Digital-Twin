@@ -6,10 +6,12 @@ import { RefObject } from "react";
 import { PointerLockControls } from "@react-three/drei";
 
 export default function Camera({
+  lockEnabled,
   interior,
   cameraRef,
   heatMap,
 }: {
+  lockEnabled: boolean;
   interior: boolean;
   cameraRef: RefObject<PointerLockControlsImpl | null>;
   heatMap: boolean;
@@ -34,29 +36,30 @@ export default function Camera({
 
   useFrame(() => {
     direction.set(0, 0, 0);
-
-    if (keys.current["w"] && !heatMap) {
-      direction.z -= 1;
-    }
-    if (keys.current["s"] && !heatMap) {
-      direction.z += 1;
-    }
-    if (keys.current["a"] && !heatMap) {
-      direction.x -= 1;
-    }
-    if (keys.current["d"] && !heatMap) {
-      direction.x += 1;
-    }
-    if (keys.current[" "] && !heatMap) {
-      direction.y += 1;
-    }
-    if (keys.current["shift"] && !heatMap) {
-      if (camera.position.y > 10) {
-        direction.y -= 1;
+    if (lockEnabled) {
+      if (keys.current["w"] && !heatMap) {
+        direction.z -= 1;
       }
-    }
-    if (keys.current["c"] && !heatMap) {
-      console.log(camera.position);
+      if (keys.current["s"] && !heatMap) {
+        direction.z += 1;
+      }
+      if (keys.current["a"] && !heatMap) {
+        direction.x -= 1;
+      }
+      if (keys.current["d"] && !heatMap) {
+        direction.x += 1;
+      }
+      if (keys.current[" "] && !heatMap) {
+        direction.y += 1;
+      }
+      if (keys.current["shift"] && !heatMap) {
+        if (camera.position.y > 10) {
+          direction.y -= 1;
+        }
+      }
+      if (keys.current["c"] && !heatMap) {
+        console.log(camera.position);
+      }
     }
 
     // Border
@@ -83,7 +86,7 @@ export default function Camera({
       .multiplyScalar(speed);
 
     // Add vertical (y) manually
-    if (interior) {
+    if (interior && !lockEnabled) {
       moveDir.y = direction.y * speed;
     }
 
@@ -91,6 +94,8 @@ export default function Camera({
   });
 
   return (
-    <PointerLockControls ref={cameraRef} /*makeDefault*/ enabled={!heatMap} />
+    lockEnabled && (
+      <PointerLockControls ref={cameraRef} /*makeDefault*/ enabled={!heatMap} />
+    )
   );
 }

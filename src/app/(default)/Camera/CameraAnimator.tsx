@@ -3,10 +3,12 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 export default function CameraAnimator({
+  showInterior,
   targetPosition,
   isTransitioning,
   onTransitionEnd,
 }: {
+  showInterior: boolean;
   targetPosition: THREE.Vector3;
   isTransitioning: boolean;
   onTransitionEnd: () => void;
@@ -20,7 +22,7 @@ export default function CameraAnimator({
   }, [targetPosition]);
 
   useFrame(() => {
-    if (isTransitioning && lerpTarget.current) {
+    if (isTransitioning && lerpTarget.current && !showInterior) {
       camera.position.lerp(lerpTarget.current, 0.1);
       camera.lookAt(lerpTarget.current);
 

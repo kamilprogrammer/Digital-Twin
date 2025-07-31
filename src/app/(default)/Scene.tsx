@@ -147,7 +147,7 @@ export default function Scene({
                 size="lg"
                 className="justify-center items-center -ml-28 -mt-16"
               >
-                {"🏢 Kamel Rifai's Building"}
+                {"🏢 Machine Sense IOT's Building"}
               </Button>
             </Html>
           </mesh>
@@ -195,14 +195,15 @@ export default function Scene({
         </>
       )}
       {/* Drone */}
-      {lockEnabled && (
+
+      {
         <Camera
+          lockEnabled={lockEnabled}
           interior={showInterior}
           cameraRef={cameraRef}
           heatMap={heatMap}
         />
-      )}
-
+      }
       {ShowDrone && !showInterior && (
         <Float
           speed={1}

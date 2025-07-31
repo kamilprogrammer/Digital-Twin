@@ -3,12 +3,8 @@ import { Building2 } from "lucide-react";
 import { Building } from "@/types/Building";
 import { City } from "@/types/City";
 import * as THREE from "three";
-import { useFrame, useThree } from "@react-three/fiber";
-import { useRef } from "react";
 interface SidebarProps {
   setCameraTarget: React.Dispatch<React.SetStateAction<THREE.Vector3 | null>>;
-  lockEnabled: boolean;
-  setLockEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   city: City;
   buildings: Building[];
   camera: THREE.Vector3;
@@ -18,8 +14,7 @@ interface SidebarProps {
 
 export default function OutSidebar({
   setCameraTarget,
-  lockEnabled,
-  setLockEnabled,
+
   buildings,
   city,
   camera,
@@ -35,9 +30,12 @@ export default function OutSidebar({
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800 rounded-xl m-2 mr-1">
-          <h2 className="text-lg p-4 pl-2 font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg p-1 pb-0 pl-2 font-semibold text-gray-900 dark:text-white">
             {city.title} City
           </h2>
+          <h4 className="text-sm p-1 pb-4 pl-2 font-normal text-gray-400 dark:text-white">
+            buildings :
+          </h4>
 
           <ul className="space-y-2 font-normal text-xs">
             {buildings.map((building) => (
@@ -54,7 +52,7 @@ export default function OutSidebar({
                       )
                     );
                   }}
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                  className="flex items-center p-2 pl-2 justify-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 >
                   <Building2 className="w-5 h-5 text-gray-500" />
                   <span className="ms-3">{building.title}</span>

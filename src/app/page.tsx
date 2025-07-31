@@ -17,6 +17,7 @@ import CityDialog from "./(default)/sidebar/dialog";
 import * as THREE from "three";
 import { useRef } from "react";
 import CameraAnimator from "./(default)/Camera/CameraAnimator";
+import { InfinitySpin } from "react-loader-spinner";
 
 export default function Page() {
   const [showInterior, setShowInterior] = useState(false);
@@ -32,6 +33,7 @@ export default function Page() {
   const [camera, setCamera] = useState<THREE.Vector3>(new THREE.Vector3());
   const [lockEnabled, setLockEnabled] = useState(false);
   const [cameraTarget, setCameraTarget] = useState<THREE.Vector3 | null>(null);
+  const [overlay, setOverlay] = useState(true);
 
   // Fetching Data from Supabase (Baas)
   useEffect(() => {
@@ -70,6 +72,12 @@ export default function Page() {
       document.removeEventListener("pointerlockchange", onPointerLockChange);
     };
   }, []);
+  useEffect(() => {
+    if (city) {
+      const timer = setTimeout(() => setOverlay(false), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [city]);
 
   return (
     <>
@@ -77,19 +85,30 @@ export default function Page() {
         <CityDialog city={city} setCity={setCity} />
       ) : (
         <>
+          {overlay && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-400 bg-opacity-10">
+              <div className="text-white text-xl flex flex-col items-center">
+                <InfinitySpin width="200" color="#FFFFFF" />
+                <div>Loading 3D Models 🏢...</div>
+              </div>
+            </div>
+          )}
+
           {/* Leva Debug Panel */}
-          <Leva
-            //hidden={showInterior}
-            collapsed={true}
-            theme={
-              {
-                /*fontSizes: {
-              root: "16px", // default is 13px
-              toolTip: "12px",
-              },*/
+          <div className="fixed top-0 right-0 z-50 pointer-events-auto">
+            <Leva
+              //hidden={showInterior}
+              collapsed={true}
+              theme={
+                {
+                  /*fontSizes: {
+                  root: "16px", // default is 13px
+                  toolTip: "12px",
+                  },*/
+                }
               }
-            }
-          />
+            />
+          </div>
           {showStream && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -137,25 +156,20 @@ export default function Page() {
             <div className="w-[12vw] p-2 pointer-events-auto">
               {showInterior ? (
                 <Sidebar
-                  showInterior={showInterior}
+                  lockEnabled={lockEnabled}
+                  setLockEnabled={setLockEnabled}
                   setShowInterior={setShowInterior}
-                  building="Building 1"
-                  floors={[
-                    "Floor 1",
-                    "Floor 2",
-                    "Floor 3",
-                    "Floor 4",
-                    "Floor 5",
-                    "Floor 6",
-                  ]}
+                  floors={[]}
                   onNavigate={(path) => {
                     router.push(path);
                   }}
+                  city={city}
+                  building={buildings[0]}
+                  camera={camera}
+                  setCameraTarget={setCameraTarget}
                 />
               ) : (
                 <OutSidebar
-                  lockEnabled={lockEnabled}
-                  setLockEnabled={setLockEnabled}
                   camera={camera}
                   setShowInterior={setShowInterior}
                   city={city}
@@ -185,6 +199,7 @@ export default function Page() {
               >
                 {isTransitioning && (
                   <CameraAnimator
+                    showInterior={showInterior}
                     targetPosition={cameraTarget || new THREE.Vector3()}
                     isTransitioning={isTransitioning}
                     onTransitionEnd={() => setIsTransitioning(false)}
