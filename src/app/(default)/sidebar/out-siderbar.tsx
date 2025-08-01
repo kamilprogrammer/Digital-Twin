@@ -39,7 +39,7 @@ export default function OutSidebar({
 
           <ul className="space-y-2 font-normal text-xs">
             {buildings.map((building) => (
-              <li key={building.id}>
+              <li key={building.id} className="justify-center items-center">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -52,7 +52,7 @@ export default function OutSidebar({
                       )
                     );
                   }}
-                  className="flex items-center p-2 pl-2 justify-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                  className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 >
                   <Building2 className="w-5 h-5 text-gray-500" />
                   <span className="ms-3">{building.title}</span>

@@ -86,7 +86,7 @@ export default function Camera({
       .multiplyScalar(speed);
 
     // Add vertical (y) manually
-    if (interior && !lockEnabled) {
+    if (interior && lockEnabled) {
       moveDir.y = direction.y * speed;
     }
 

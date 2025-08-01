@@ -15,7 +15,6 @@ import { useEffect } from "react";
 import { City, Floor, Building } from "@/types";
 import CityDialog from "./(default)/sidebar/dialog";
 import * as THREE from "three";
-import { useRef } from "react";
 import CameraAnimator from "./(default)/Camera/CameraAnimator";
 import { InfinitySpin } from "react-loader-spinner";
 
@@ -27,7 +26,7 @@ export default function Page() {
   const [heatMap, setHeatMap] = useState(false);
 
   const [buildings, setBuildings] = useState<Building[]>([]);
-  const [cities, setCities] = useState<City[]>([]);
+  const [floors, setFloors] = useState<Floor[]>([]);
   const [city, setCity] = useState<City | null>(null);
 
   const [camera, setCamera] = useState<THREE.Vector3>(new THREE.Vector3());
@@ -35,7 +34,15 @@ export default function Page() {
   const [cameraTarget, setCameraTarget] = useState<THREE.Vector3 | null>(null);
   const [overlay, setOverlay] = useState(true);
 
-  // Fetching Data from Supabase (Baas)
+  const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(
+    null
+  );
+  const [selectedFloor, setSelectedFloor] = useState<Floor | null>({
+    floorIndex: 1,
+    buildingId: selectedBuilding?.id || null,
+  });
+
+  // Fetching Buildings from Supabase (Baas)
   useEffect(() => {
     const fetchBuildings = async () => {
       if (!city) return;
@@ -47,10 +54,30 @@ export default function Page() {
         console.error("Error fetching buildings:", error);
       } else {
         setBuildings(data);
+        setSelectedBuilding(data[0]);
       }
     };
     fetchBuildings();
   }, [city]);
+
+  // Fetching Floors from Supabase (Baas)
+  useEffect(() => {
+    if (!selectedBuilding) return;
+    const fetchFloors = async () => {
+      if (!city) return;
+      const { data, error } = await supabase
+        .from("Floors")
+        .select("*")
+        .eq("buildingId", selectedBuilding.id)
+        .order("floorIndex", { ascending: false });
+      if (error) {
+        console.error("Error fetching floors:", error);
+      } else {
+        setFloors(data);
+      }
+    };
+    fetchFloors();
+  }, [city, selectedBuilding]);
 
   useEffect(() => {
     if (cameraTarget) {
@@ -156,15 +183,16 @@ export default function Page() {
             <div className="w-[12vw] p-2 pointer-events-auto">
               {showInterior ? (
                 <Sidebar
+                  setSelectedFloor={setSelectedFloor}
                   lockEnabled={lockEnabled}
                   setLockEnabled={setLockEnabled}
                   setShowInterior={setShowInterior}
-                  floors={[]}
+                  floors={floors}
                   onNavigate={(path) => {
                     router.push(path);
                   }}
                   city={city}
-                  building={buildings[0]}
+                  building={selectedBuilding || buildings[0]}
                   camera={camera}
                   setCameraTarget={setCameraTarget}
                 />
@@ -206,8 +234,11 @@ export default function Page() {
                   />
                 )}
                 <GLTFModels
+                  selectedBuilding={selectedBuilding}
+                  selectedFloor={selectedFloor}
+                  setSelectedFloor={setSelectedFloor}
                   lockEnabled={lockEnabled}
-                  city={city?.title || null}
+                  city={city || null}
                   heatMap={heatMap}
                   setHeatMap={setHeatMap}
                   showInterior={showInterior}

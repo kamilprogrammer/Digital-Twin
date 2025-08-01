@@ -16,8 +16,15 @@ import {
   GLTF,
   PointerLockControls as PointerLockControlsImpl,
 } from "three-stdlib";
+import { Floor } from "@/types";
+import { InfinitySpin } from "react-loader-spinner";
+import { Building, City } from "@/types";
 
 export default function Scene({
+  city,
+  selectedBuilding,
+  selectedFloor,
+  setSelectedFloor,
   lockEnabled,
   dubai,
   drone,
@@ -31,6 +38,10 @@ export default function Scene({
   isTransitioning,
   setIsTransitioning,
 }: {
+  city: City | null;
+  selectedBuilding: Building | null;
+  selectedFloor: Floor | null;
+  setSelectedFloor: React.Dispatch<React.SetStateAction<Floor | null>>;
   lockEnabled: boolean;
   dubai: GLTF;
   drone: GLTF;
@@ -51,6 +62,7 @@ export default function Scene({
   const cameraRef = useRef<PointerLockControlsImpl>(null);
   const DroneRef = useRef<THREE.Object3D | null>(null);
   const [isLookingAtButton, setIsLookingAtButton] = useState(false);
+  const InteriorRef = useRef<THREE.Object3D | null>(null);
 
   const { camera } = useThree();
 
@@ -221,17 +233,52 @@ export default function Scene({
       <directionalLight position={[-10, -10, -10]} intensity={2} />
       {/* Interior Model */}
       {showInterior && (
-        <Suspense fallback={null}>
-          <InteriorModel
-            showInterior={showInterior}
-            showStream={showStream}
-            heatMap={heatMap}
-            setHeatMap={setHeatMap}
-            setShowStream={setShowStream}
-            setStreamValue={setStreamValue}
-            setShowInterior={setShowInterior}
-          />
-        </Suspense>
+        <>
+          <mesh
+            position={InteriorRef.current?.position.clone().setY(130).setX(140)}
+            rotation={[0, Math.PI / 2, 0]}
+          >
+            <planeGeometry args={[250, 200]} />
+            <meshBasicMaterial
+              opacity={0.1}
+              transparent
+              color="#fff"
+              depthTest={false}
+              depthWrite={false}
+            />
+            <Text
+              fontSize={100}
+              lineHeight={1.2}
+              anchorX="center"
+              color={"black"}
+              font="/cairo.ttf"
+            >
+              {selectedFloor?.floorIndex}
+            </Text>
+          </mesh>
+          <Suspense
+            fallback={
+              <Html>
+                <InfinitySpin width="200" color="#FFFFFF" />
+              </Html>
+            }
+          >
+            <InteriorModel
+              city={city}
+              selectedBuilding={selectedBuilding}
+              InteriorRef={InteriorRef}
+              selectedFloor={selectedFloor}
+              setSelectedFloor={setSelectedFloor}
+              showInterior={showInterior}
+              showStream={showStream}
+              heatMap={heatMap}
+              setHeatMap={setHeatMap}
+              setShowStream={setShowStream}
+              setStreamValue={setStreamValue}
+              setShowInterior={setShowInterior}
+            />
+          </Suspense>
+        </>
       )}
     </>
   );

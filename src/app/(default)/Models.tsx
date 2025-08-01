@@ -1,8 +1,12 @@
 "use client";
 import { useGLTF } from "@react-three/drei";
 import Scene from "./Scene";
+import { Building, Floor, City } from "@/types";
 
 export function GLTFModels({
+  selectedBuilding,
+  selectedFloor,
+  setSelectedFloor,
   lockEnabled,
   city,
   heatMap,
@@ -15,8 +19,11 @@ export function GLTFModels({
   setShowStream,
   setStreamValue,
 }: {
+  selectedBuilding: Building | null;
+  selectedFloor: Floor | null;
+  setSelectedFloor: React.Dispatch<React.SetStateAction<Floor | null>>;
   lockEnabled: boolean;
-  city: string | null;
+  city: City | null;
   heatMap: boolean;
   setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
   showInterior: boolean;
@@ -27,11 +34,15 @@ export function GLTFModels({
   setShowStream: React.Dispatch<React.SetStateAction<boolean>>;
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const dubai = useGLTF(`/${city}.glb`);
+  const dubai = useGLTF(`/${city?.title}.glb`);
   const drone = useGLTF("/drone.glb");
 
   return (
     <Scene
+      city={city || null}
+      selectedBuilding={selectedBuilding}
+      selectedFloor={selectedFloor}
+      setSelectedFloor={setSelectedFloor}
       dubai={dubai}
       drone={drone}
       heatMap={heatMap}

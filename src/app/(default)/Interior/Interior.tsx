@@ -10,8 +10,14 @@ import AC from "../Devices/AC";
 import type { AcType } from "../../../types/AcType";
 import { useControls, folder, Leva } from "leva";
 import "../../globals.css";
+import { City, Building, Floor } from "@/types";
 
 export default function InteriorModel({
+  city,
+  selectedBuilding,
+  InteriorRef,
+  selectedFloor,
+  setSelectedFloor,
   showInterior,
   showStream,
   heatMap,
@@ -20,6 +26,11 @@ export default function InteriorModel({
   setStreamValue,
   setShowInterior,
 }: {
+  city: City | null;
+  selectedBuilding: Building | null;
+  InteriorRef: React.RefObject<THREE.Object3D | null>;
+  selectedFloor: Floor | null;
+  setSelectedFloor: React.Dispatch<React.SetStateAction<Floor | null>>;
   showInterior: boolean;
   showStream: boolean;
   heatMap: boolean;
@@ -28,11 +39,12 @@ export default function InteriorModel({
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
   setShowInterior: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const interior = useGLTF("/interior.glb");
+  const interior = useGLTF(
+    `3Ds/${city?.title}/${selectedBuilding?.id}/${selectedFloor?.floorIndex}.glb`
+  );
   const { camera } = useThree();
   const [isDeveloping, setIsDeveloping] = useState(false);
   const [devices, setDevices] = useState<CameraType[]>([]);
-  const InteriorRef = useRef<THREE.Object3D | null>(null);
 
   // Debug Controls
   const { ShowAC } = useControls({
