@@ -3,7 +3,7 @@ import { useThree } from "@react-three/fiber";
 import type { CameraType } from "../../../types/CameraType";
 import { useEffect, useRef, useState } from "react";
 import Cctv from "../Devices/Cctv";
-import { supabase } from "../../../supabase";
+import { supabase } from "../../../supabase-digital-twin";
 import * as THREE from "three";
 import { temps } from "../Devices/HeatMap";
 import AC from "../Devices/AC";
@@ -141,7 +141,7 @@ export default function InteriorModel({
   useEffect(() => {
     const fetchDevices = async () => {
       const { data, error } = await supabase
-        .from("DubaiDevices")
+        .from("Cameras")
         .select("*")
         .order("id", { ascending: true });
       if (data) {
@@ -161,6 +161,8 @@ export default function InteriorModel({
                 password: dvc.password,
                 notes: dvc.notes,
                 mode: dvc.mode,
+                floor: dvc.floor,
+                buildingId: dvc.buildingId,
 
                 title: dvc.title,
                 position: { x: dvc.x, y: dvc.y, z: dvc.z },
@@ -211,7 +213,7 @@ export default function InteriorModel({
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "c") {
-        if (isDeveloping) {
+        if (isDeveloping && selectedFloor?.floorIndex && selectedBuilding?.id) {
           const newCam: CameraType = {
             uniqueId: crypto.randomUUID(),
             title: "Placed Camera",
@@ -223,6 +225,8 @@ export default function InteriorModel({
             username: "admin",
             password: "admin#1@go.dubai",
             notes: "",
+            floor: selectedFloor?.floorIndex,
+            buildingId: selectedBuilding?.id,
             position: {
               x: camera.position.x,
               y: camera.position.y,
@@ -281,6 +285,8 @@ export default function InteriorModel({
                 password: "admin#1@go.dubai",
                 vendor: "Dahua",
                 model: "IPC-HDBW2230E-S-S2",
+                floor: dvc.floor,
+                buildingId: dvc.buildingId,
                 x: dvc.position.x,
                 y: dvc.position.y,
                 z: dvc.position.z,
@@ -317,7 +323,7 @@ export default function InteriorModel({
           const animate = () => {
             t += 0.01;
             camera.position.lerpVectors(from, to, t);
-            const targetEuler = new THREE.Euler(0, 0, 0); // yaw: 90 degrees
+            const targetEuler = new THREE.Euler(0, Math.PI / 2, 0); // yaw: 90 degrees
             const targetQuaternion = new THREE.Quaternion().setFromEuler(
               targetEuler
             );
@@ -632,6 +638,7 @@ export default function InteriorModel({
       show: true,
     },
   ]);
+
   return (
     <>
       <ambientLight intensity={2} />
