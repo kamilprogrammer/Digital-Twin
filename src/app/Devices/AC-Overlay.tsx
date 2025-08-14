@@ -2,15 +2,15 @@ import { Html } from "@react-three/drei";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { motion } from "framer-motion";
-import { Switch } from "../../../components/ui/switch";
-import type { AcType } from "../../../types/AcType";
+import { Switch } from "@/components/ui/switch";
+import type { AcType } from "@/types/AcType";
 
 type Props = {
   ac: AcType;
   isDeveloping: boolean;
 };
 
-export default function AC({ ac, isDeveloping }: Props) {
+export default function ACOverlay({ ac, isDeveloping }: Props) {
   const objRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
   const [active, setActive] = useState(ac.mode === "ACTIVE" ? true : false);

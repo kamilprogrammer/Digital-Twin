@@ -7,9 +7,9 @@ import { Button } from "../../components/ui/button";
 import { Html, Text } from "@react-three/drei";
 import { Sky } from "@react-three/drei";
 import { Float } from "@react-three/drei";
-import Camera from "./Camera/Camera";
-import DroneFollower from "./Camera/Drone";
-import InteriorModel from "./Interior/Interior";
+import Camera from "../Camera/Camera";
+import DroneFollower from "../Camera/Drone";
+import InteriorModel from "../Interior/Interior";
 import { folder, useControls } from "leva";
 import "../globals.css";
 import {

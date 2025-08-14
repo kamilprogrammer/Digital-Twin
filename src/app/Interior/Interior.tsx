@@ -1,14 +1,12 @@
 import { Html, Sky, useGLTF } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import type { CameraType } from "../../../types/CameraType";
-import { useEffect, useRef, useState } from "react";
-import Cctv from "../Devices/Cctv";
-import { supabase } from "../../../supabase-digital-twin";
+import type { CameraType } from "../../types/CameraType";
+import { useEffect, useState } from "react";
+import { supabase } from "../../supabase-digital-twin";
 import * as THREE from "three";
-import { temps } from "../Devices/HeatMap";
-import AC from "../Devices/AC";
-import type { AcType } from "../../../types/AcType";
-import { useControls, folder, Leva } from "leva";
+import { AC, Cctv, temps, ACOverlay } from "../Devices";
+import type { AcType } from "../../types/AcType";
+import { useControls, folder } from "leva";
 import "../../globals.css";
 import { City, Building, Floor } from "@/types";
 
@@ -44,7 +42,8 @@ export default function InteriorModel({
   );
   const { camera } = useThree();
   const [isDeveloping, setIsDeveloping] = useState(false);
-  const [devices, setDevices] = useState<CameraType[]>([]);
+  const [cameras, setCameras] = useState<CameraType[]>([]);
+  const [ACs, setACs] = useState<AcType[]>([]);
 
   // Debug Controls
   const { ShowAC } = useControls({
@@ -146,8 +145,8 @@ export default function InteriorModel({
         .order("id", { ascending: true });
       if (data) {
         //console.log(data);
-        if (!devices.length) {
-          setDevices(
+        if (!cameras.length) {
+          setCameras(
             data.map((dvc) => {
               return {
                 id: dvc.id,
@@ -199,7 +198,7 @@ export default function InteriorModel({
     console.log("Updated Position:", pos);*/
     }
 
-    setDevices((prev) => {
+    setCameras((prev) => {
       const updated = prev.map((dvc) =>
         dvc.uniqueId === uniqueId
           ? { ...dvc, position: { ...pos }, rotation: { ...rot } }
@@ -239,72 +238,118 @@ export default function InteriorModel({
             },
             show: true,
           };
-          setDevices((prev) => [...prev, newCam]);
+          setCameras((prev) => [...prev, newCam]);
         }
       }
       if (e.key === "Delete" && !heatMap) {
-        if (devices[devices.length - 1].id) {
+        if (cameras[cameras.length - 1].id) {
           const { data, error } = await supabase
-            .from("DubaiDevices")
+            .from("Cameras")
             .update({
               show: false,
             })
-            .eq("id", devices[devices.length - 1].id);
+            .eq("id", cameras[cameras.length - 1].id);
           console.log(data, error || "Deleted successfully");
         }
-        setDevices((prev) => prev.slice(0, prev.length - 1));
+        setCameras((prev) => prev.slice(0, prev.length - 1));
       }
       if ((e.key === "Home" || e.key === "h") && !heatMap) {
-        console.log(devices[devices.length - 1]);
-        devices.forEach(async (dvc) => {
-          if (dvc.id) {
+        cameras.forEach(async (cam) => {
+          if (cam.id) {
             const { data, error } = await supabase
-              .from("DubaiDevices")
+              .from("Cameras")
               .update({
-                x: dvc.position.x,
-                y: dvc.position.y,
-                z: dvc.position.z,
-                rot_x: dvc.rotation.x,
-                rot_y: dvc.rotation.y,
-                rot_z: dvc.rotation.z,
+                x: cam.position.x,
+                y: cam.position.y,
+                z: cam.position.z,
+                rot_x: cam.rotation.x,
+                rot_y: cam.rotation.y,
+                rot_z: cam.rotation.z,
               })
-              .eq("id", dvc.id);
+              .eq("id", cam.id);
             console.log(data);
             console.log(error || "Updated successfully");
           } else {
             const { data, error } = await supabase
-              .from("DubaiDevices")
+              .from("Cameras")
               .insert({
-                uniqueId: dvc.uniqueId,
-                ip: dvc.ip,
-                mac: dvc.mac,
-                notes: dvc.notes,
+                uniqueId: cam.uniqueId,
+                ip: cam.ip,
+                mac: cam.mac,
+                notes: cam.notes,
                 port: 554,
-                title: dvc.title,
+                title: cam.title,
                 username: "admin",
                 password: "admin#1@go.dubai",
                 vendor: "Dahua",
                 model: "IPC-HDBW2230E-S-S2",
-                floor: dvc.floor,
-                buildingId: dvc.buildingId,
-                x: dvc.position.x,
-                y: dvc.position.y,
-                z: dvc.position.z,
-                rot_x: dvc.rotation.x,
-                rot_y: dvc.rotation.y,
-                rot_z: dvc.rotation.z,
+                floor: cam.floor,
+                buildingId: cam.buildingId,
+                x: cam.position.x,
+                y: cam.position.y,
+                z: cam.position.z,
+                rot_x: cam.rotation.x,
+                rot_y: cam.rotation.y,
+                rot_z: cam.rotation.z,
                 mode: "ACTIVE",
                 show: true,
               })
               .select("*");
             console.log(data);
-            setDevices((prev) => {
-              const updated = prev.map((dvc) =>
-                dvc.uniqueId === dvc.uniqueId
-                  ? { ...dvc, id: data![0].id }
-                  : dvc
+            setCameras((prev) => {
+              const updated = prev.map((cam) =>
+                cam.uniqueId === cam.uniqueId
+                  ? { ...cam, id: data![0].id }
+                  : cam
               );
-              console.log("Updated Devices:", updated); // ✅ See the actual result
+              console.log("Updated Devices:", updated); // See the actual result
+              return updated;
+            });
+            console.log(data, error || "Inserted successfully");
+          }
+        });
+        ACs.forEach(async (ac) => {
+          if (ac.id) {
+            const { data, error } = await supabase
+              .from("ACs")
+              .update({
+                x: ac.position.x,
+                y: ac.position.y,
+                z: ac.position.z,
+                rot_x: ac.rotation.x,
+                rot_y: ac.rotation.y,
+                rot_z: ac.rotation.z,
+              })
+              .eq("id", ac.id);
+            console.log(data);
+            console.log(error || "Updated successfully");
+          } else {
+            const { data, error } = await supabase
+              .from("ACs")
+              .insert({
+                uniqueId: ac.uniqueId,
+                ip: ac.ip,
+                mac: ac.mac,
+                notes: ac.notes,
+                title: ac.title,
+                floorId: ac.floorId,
+                buildingId: ac.buildingId,
+                x: ac.position.x,
+                y: ac.position.y,
+                z: ac.position.z,
+                rot_x: ac.rotation.x,
+                rot_y: ac.rotation.y,
+                rot_z: ac.rotation.z,
+                mode: "ACTIVE",
+                show: true,
+              })
+              .select("*");
+            console.log(data);
+            setACs((prev) => {
+              const updated = prev.map((ac) =>
+                ac.uniqueId === ac.uniqueId ? { ...ac, id: data![0].id } : ac
+              );
+              console.log("Updated ACs:", updated); // See the actual result
               return updated;
             });
             console.log(data, error || "Inserted successfully");
@@ -349,7 +394,7 @@ export default function InteriorModel({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [devices, isDeveloping, heatMap]);
+  }, [cameras, isDeveloping, heatMap]);
   const [mockACs, setMockACs] = useState<AcType[]>([
     {
       id: 1,
@@ -360,6 +405,8 @@ export default function InteriorModel({
       model: "IOT AC #1",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 980.2782602371987,
         y: 24.482972428416,
@@ -382,6 +429,8 @@ export default function InteriorModel({
       model: "IOT AC #2",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 889.5978900679819,
         y: 24.455844122715675,
@@ -404,6 +453,8 @@ export default function InteriorModel({
       model: "IOT AC #3",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 784.2617927370359,
         y: 24.455844122715675,
@@ -426,6 +477,8 @@ export default function InteriorModel({
       model: "IOT AC #4",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 752.1966208347592,
         y: 24.455844122715675,
@@ -448,6 +501,8 @@ export default function InteriorModel({
       model: "IOT AC #5",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 685.5230408328782,
         y: 24.455844122715675,
@@ -470,6 +525,8 @@ export default function InteriorModel({
       model: "IOT AC #6",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 619.6305099584712,
         y: 24.455844122715675,
@@ -492,6 +549,8 @@ export default function InteriorModel({
       model: "IOT AC #7",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 640.287466136744,
         y: 24.455844122715675,
@@ -514,6 +573,8 @@ export default function InteriorModel({
       model: "IOT AC #8",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 634.8857688088333,
         y: 24.455844122715675,
@@ -536,6 +597,8 @@ export default function InteriorModel({
       model: "IOT AC #9",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 742.7063112048392,
         y: 24.455844122715675,
@@ -558,6 +621,8 @@ export default function InteriorModel({
       model: "IOT AC #10",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 741.4418491409406,
         y: 24.455844122715675,
@@ -580,6 +645,8 @@ export default function InteriorModel({
       model: "IOT AC #11",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 756.6697122010439,
         y: 24.455844122715675,
@@ -602,6 +669,8 @@ export default function InteriorModel({
       model: "IOT AC #12",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 851.3070560657316,
         y: 24.455844122715675,
@@ -624,6 +693,8 @@ export default function InteriorModel({
       model: "IOT AC #1",
       vendor: "Machine Sense",
       notes: "Mock AC",
+      floorId: 1,
+      buildingId: 1,
       position: {
         x: 903.0095858500986,
         y: 24.455844122715675,
@@ -669,22 +740,31 @@ export default function InteriorModel({
             </Html>
           );
         })}
-      {devices
-        .filter((dvc) => dvc.show)
-        .map((dvc) => (
+      {cameras
+        .filter((cam) => cam.show)
+        .map((cam) => (
           <Cctv
-            cam={dvc}
+            cam={cam}
             isDeveloping={isDeveloping}
             showStream={showStream}
             setShowStream={setShowStream}
             setStreamValue={setStreamValue}
-            key={dvc.uniqueId}
+            key={cam.uniqueId}
             onUpdatePosition={onUpdatePosition}
           />
         ))}
+      {ACs.filter((ac) => ac.show).map((ac) => (
+        <AC
+          ac={ac}
+          ShowAC={ShowAC}
+          isDeveloping={isDeveloping}
+          key={ac.uniqueId}
+          onUpdatePosition={onUpdatePosition}
+        />
+      ))}
       {ShowAC &&
         mockACs.map((ac) => (
-          <AC ac={ac} isDeveloping={false} key={ac.uniqueId + ac.id} />
+          <ACOverlay ac={ac} isDeveloping={false} key={ac.uniqueId + ac.id} />
         ))}
       <primitive
         object={interior.scene}

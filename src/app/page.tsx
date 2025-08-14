@@ -1,21 +1,21 @@
 "use client";
 import "./globals.css";
-import { Canvas, useThree, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Leva } from "leva";
-import { HeatLayer } from "./(default)/Devices/HeatMap";
+import { HeatLayer } from "./Devices/HeatMap";
 import { GLTFModels } from "./(default)/Models";
-import Sidebar from "./(default)/sidebar/sidebar";
+import Sidebar from "./sidebar/sidebar";
 import router from "next/router";
-import OutSidebar from "./(default)/sidebar/out-siderbar";
+import OutSidebar from "./sidebar/out-siderbar";
 import { supabase } from "@/supabase-digital-twin";
 import { useEffect } from "react";
 import { City, Floor, Building } from "@/types";
-import CityDialog from "./(default)/sidebar/dialog";
+import CityDialog from "./sidebar/dialog";
 import * as THREE from "three";
-import CameraAnimator from "./(default)/Camera/CameraAnimator";
+import CameraAnimator from "./Camera/CameraAnimator";
 import { InfinitySpin } from "react-loader-spinner";
 
 export default function Page() {
@@ -184,6 +184,7 @@ export default function Page() {
               {showInterior ? (
                 <Sidebar
                   setSelectedFloor={setSelectedFloor}
+                  city={city}
                   lockEnabled={lockEnabled}
                   setLockEnabled={setLockEnabled}
                   setShowInterior={setShowInterior}
@@ -191,7 +192,6 @@ export default function Page() {
                   onNavigate={(path) => {
                     router.push(path);
                   }}
-                  city={city}
                   building={selectedBuilding || buildings[0]}
                   camera={camera}
                   setCameraTarget={setCameraTarget}

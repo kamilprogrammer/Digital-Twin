@@ -2,13 +2,13 @@ import { Html, PivotControls } from "@react-three/drei";
 import { useMemo, useRef, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import type { CameraType } from "../../../types/CameraType";
+import type { CameraType } from "../../types/CameraType";
 import { motion } from "framer-motion";
 import Badge from "../Add-ons/Badge";
-import { Switch } from "../../../components/ui/switch";
+import { Switch } from "../../components/ui/switch";
 import { useFrame } from "@react-three/fiber";
-import { supabase } from "../../../supabase";
-import { Button } from "../../../components/ui/button";
+import { supabase } from "../../supabase-digital-twin";
+import { Button } from "../../components/ui/button";
 import { folder, useControls } from "leva";
 import "../../globals.css";
 

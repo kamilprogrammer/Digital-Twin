@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Layers2 } from "lucide-react";
+import { Plus, Layers2 } from "lucide-react";
 import * as THREE from "three";
 import { Floor, Building, City } from "@/types";
 interface SidebarProps {
@@ -42,7 +41,7 @@ export default function Sidebar({
           </h4>
 
           <ul className="space-y-2 font-normal text-xs">
-            {floors.map((floor) => (
+            {floors.map((floor: Floor) => (
               <li key={floor.id} className="justify-center items-center">
                 <button
                   onClick={(e) => {
@@ -56,6 +55,20 @@ export default function Sidebar({
                 </button>
               </li>
             ))}
+            <li className="justify-start items-start">
+              <div className="ml-2 h-[0.2] w-[7vw] bg-black opacity-15"></div>
+            </li>
+            <li className="justify-center items-center">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <Plus className="w-5 h-5 text-gray-500" />
+                <span className="ms-3">FCU/AC</span>
+              </button>
+            </li>
           </ul>
         </div>
       </aside>
