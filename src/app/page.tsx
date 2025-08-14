@@ -5,7 +5,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Leva } from "leva";
-import { HeatLayer } from "./Devices/HeatMap";
+//import { HeatLayer } from "./Devices/HeatMap";
 import { GLTFModels } from "./(default)/Models";
 import Sidebar from "./sidebar/sidebar";
 import router from "next/router";
@@ -252,9 +252,9 @@ export default function Page() {
               </Canvas>
             </div>
           </div>
-          <div className="absolute top-0 left-0 w-screen h-screen pointer-events-none z-10">
+          {/*<div className="absolute top-0 left-0 w-screen h-screen pointer-events-none z-10">
             {heatMap && <HeatLayer />}
-          </div>
+          </div>*/}
         </>
       )}
     </>

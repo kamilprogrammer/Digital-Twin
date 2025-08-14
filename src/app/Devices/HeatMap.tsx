@@ -1,4 +1,4 @@
-import h337 from "heatmap.js";
+/*import h337 from "heatmap.js";
 import { useEffect, useRef } from "react";
 
 export const temps: { x: number; z: number; value: string; id: number }[] = [
@@ -221,3 +221,4 @@ export function HeatLayer() {
     />
   );
 }
+*/

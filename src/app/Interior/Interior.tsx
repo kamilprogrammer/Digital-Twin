@@ -724,21 +724,23 @@ export default function InteriorModel({
         azimuth={0.25}
       />
 
-      {heatMap &&
-        temps.map((temp) => {
-          console.log(temp);
-          return (
-            <Html
-              position={[temp.x, 10, temp.z]}
-              //rotation={[0, Math.PI / 2, Math.PI]}
-              key={temp.id}
-            >
-              <span className="font-cairo text-lg whitespace-nowrap">
-                {temp.value}
-              </span>
-            </Html>
-          );
-        })}
+      {/*{heatMap &&
+        temps.map(
+          (temp: { x: number; z: number; value: string; id: number }) => {
+            console.log(temp);
+            return (
+              <Html
+                position={[temp.x, 10, temp.z]}
+                //rotation={[0, Math.PI / 2, Math.PI]}
+                key={temp.id}
+              >
+                <span className="font-cairo text-lg whitespace-nowrap">
+                  {temp.value}
+                </span>
+              </Html>
+            );
+          }
+        )}*/}
       {cameras
         .filter((cam) => cam.show)
         .map((cam) => (
