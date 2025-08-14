@@ -7,7 +7,6 @@ import * as THREE from "three";
 import { AC, Cctv, temps, ACOverlay } from "../Devices";
 import type { AcType } from "../../types/AcType";
 import { useControls, folder } from "leva";
-import "../../globals.css";
 import { City, Building, Floor } from "@/types";
 
 export default function InteriorModel({

@@ -11,7 +11,6 @@ import Camera from "../Camera/Camera";
 import DroneFollower from "../Camera/Drone";
 import InteriorModel from "../Interior/Interior";
 import { folder, useControls } from "leva";
-import "../globals.css";
 import {
   GLTF,
   PointerLockControls as PointerLockControlsImpl,

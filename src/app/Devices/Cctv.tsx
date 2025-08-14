@@ -10,7 +10,6 @@ import { useFrame } from "@react-three/fiber";
 import { supabase } from "../../supabase-digital-twin";
 import { Button } from "../../components/ui/button";
 import { folder, useControls } from "leva";
-import "../../globals.css";
 
 type Props = {
   cam: CameraType;
