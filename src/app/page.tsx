@@ -17,6 +17,7 @@ import CityDialog from "./sidebar/dialog";
 import * as THREE from "three";
 import CameraAnimator from "./Camera/CameraAnimator";
 import { InfinitySpin } from "react-loader-spinner";
+import { useStore } from "@/store/useStore";
 
 export default function Page() {
   const [showInterior, setShowInterior] = useState(false);
@@ -34,14 +35,8 @@ export default function Page() {
   const [cameraTarget, setCameraTarget] = useState<THREE.Vector3 | null>(null);
   const [overlay, setOverlay] = useState(true);
 
-  const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(
-    null
-  );
-  const [selectedFloor, setSelectedFloor] = useState<Floor | null>({
-    floorIndex: 1,
-    buildingId: selectedBuilding?.id || null,
-  });
-
+  const selectedBuilding = useStore((state) => state.selectedBuilding);
+  const setSelectedBuilding = useStore((state) => state.setSelectedBuilding);
   // Fetching Buildings from Supabase (Baas)
   useEffect(() => {
     const fetchBuildings = async () => {
@@ -68,7 +63,7 @@ export default function Page() {
       const { data, error } = await supabase
         .from("Floors")
         .select("*")
-        .eq("buildingId", selectedBuilding.id)
+        .eq("buildingId", selectedBuilding?.id)
         .order("floorIndex", { ascending: false });
       if (error) {
         console.error("Error fetching floors:", error);
@@ -183,7 +178,6 @@ export default function Page() {
             <div className="w-[12vw] p-2 pointer-events-auto">
               {showInterior ? (
                 <Sidebar
-                  setSelectedFloor={setSelectedFloor}
                   city={city}
                   lockEnabled={lockEnabled}
                   setLockEnabled={setLockEnabled}
@@ -192,8 +186,6 @@ export default function Page() {
                   onNavigate={(path) => {
                     router.push(path);
                   }}
-                  building={selectedBuilding || buildings[0]}
-                  camera={camera}
                   setCameraTarget={setCameraTarget}
                 />
               ) : (
@@ -234,9 +226,6 @@ export default function Page() {
                   />
                 )}
                 <GLTFModels
-                  selectedBuilding={selectedBuilding}
-                  selectedFloor={selectedFloor}
-                  setSelectedFloor={setSelectedFloor}
                   lockEnabled={lockEnabled}
                   city={city || null}
                   heatMap={heatMap}

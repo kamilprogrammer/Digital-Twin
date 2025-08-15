@@ -18,12 +18,10 @@ import {
 import { Floor } from "@/types";
 import { InfinitySpin } from "react-loader-spinner";
 import { Building, City } from "@/types";
+import { useStore } from "@/store/useStore";
 
 export default function Scene({
   city,
-  selectedBuilding,
-  selectedFloor,
-  setSelectedFloor,
   lockEnabled,
   dubai,
   drone,
@@ -38,9 +36,6 @@ export default function Scene({
   setIsTransitioning,
 }: {
   city: City | null;
-  selectedBuilding: Building | null;
-  selectedFloor: Floor | null;
-  setSelectedFloor: React.Dispatch<React.SetStateAction<Floor | null>>;
   lockEnabled: boolean;
   dubai: GLTF;
   drone: GLTF;
@@ -62,9 +57,10 @@ export default function Scene({
   const DroneRef = useRef<THREE.Object3D | null>(null);
   const [isLookingAtButton, setIsLookingAtButton] = useState(false);
   const InteriorRef = useRef<THREE.Object3D | null>(null);
-
   const { camera } = useThree();
-
+  const setCameraPosition = useStore((state) => state.setCameraPosition);
+  const selectedFloor = useStore((state) => state.selectedFloor);
+  const cameraPosition = useStore((state) => state.cameraPosition);
   function triggerEnterBuilding() {
     const targetPosition = new THREE.Vector3(1010, 10, 20);
     let t = 0;
@@ -252,7 +248,7 @@ export default function Scene({
               color={"black"}
               font="/cairo.ttf"
             >
-              {selectedFloor?.floorIndex}
+              {selectedFloor}
             </Text>
           </mesh>
           <Suspense
@@ -264,10 +260,7 @@ export default function Scene({
           >
             <InteriorModel
               city={city}
-              selectedBuilding={selectedBuilding}
               InteriorRef={InteriorRef}
-              selectedFloor={selectedFloor}
-              setSelectedFloor={setSelectedFloor}
               showInterior={showInterior}
               showStream={showStream}
               heatMap={heatMap}

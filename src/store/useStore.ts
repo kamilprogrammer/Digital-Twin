@@ -1,22 +1,44 @@
 import { create } from "zustand";
+import * as THREE from "three";
+import { AcType, Floor, Building } from "@/types";
 
 interface StoreState {
+  ACs: AcType[];
+  setACs: (acs: AcType[]) => void;
+  addAC: (ac: AcType) => void;
+  delAC: (id: number) => void;
+
+  selectedFloor: number;
+  setSelectedFloor: (floor: number) => void;
+
+  selectedBuilding: Building | null;
+  setSelectedBuilding: (building: Building | null) => void;
+
   selectedAsset: string | null;
   setSelectedAsset: (asset: string | null) => void;
 
-  cameraPosition: [number, number, number];
-  setCameraPosition: (pos: [number, number, number]) => void;
+  cameraPosition: THREE.Vector3;
+  setCameraPosition: (pos: THREE.Vector3) => void;
 
   uiPanelOpen: boolean;
   setUiPanelOpen: (open: boolean) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
+  ACs: [],
+  setACs: (acs) => set((state) => ({ ACs: acs })),
+  addAC: (ac) => set((state) => ({ ACs: [...state.ACs, ac] })),
+  delAC: (id: number) =>
+    set((state) => ({ ACs: state.ACs.filter((ac) => ac.id !== id) })),
+  selectedFloor: 1,
+  setSelectedFloor: (floor: number) => set({ selectedFloor: floor }),
+  selectedBuilding: null,
+  setSelectedBuilding: (building: Building | null) =>
+    set({ selectedBuilding: building }),
   selectedAsset: null,
   setSelectedAsset: (asset: string | null) => set({ selectedAsset: asset }),
-  cameraPosition: [0, 0, 0],
-  setCameraPosition: (pos: [number, number, number]) =>
-    set({ cameraPosition: pos }),
+  cameraPosition: new THREE.Vector3(0, 0, 0),
+  setCameraPosition: (pos: THREE.Vector3) => set({ cameraPosition: pos }),
   uiPanelOpen: false,
   setUiPanelOpen: (open: boolean) => set({ uiPanelOpen: open }),
 }));

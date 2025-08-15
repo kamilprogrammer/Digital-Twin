@@ -1,20 +1,18 @@
 import { Html, Sky, useGLTF } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import type { CameraType } from "../../types/CameraType";
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabase-digital-twin";
 import * as THREE from "three";
-import { AC, Cctv, temps, ACOverlay } from "../Devices";
+import { AC, Cctv, ACOverlay } from "../Devices";
 import type { AcType } from "../../types/AcType";
 import { useControls, folder } from "leva";
 import { City, Building, Floor } from "@/types";
+import { useStore } from "@/store/useStore";
 
 export default function InteriorModel({
   city,
-  selectedBuilding,
   InteriorRef,
-  selectedFloor,
-  setSelectedFloor,
   showInterior,
   showStream,
   heatMap,
@@ -24,10 +22,7 @@ export default function InteriorModel({
   setShowInterior,
 }: {
   city: City | null;
-  selectedBuilding: Building | null;
   InteriorRef: React.RefObject<THREE.Object3D | null>;
-  selectedFloor: Floor | null;
-  setSelectedFloor: React.Dispatch<React.SetStateAction<Floor | null>>;
   showInterior: boolean;
   showStream: boolean;
   heatMap: boolean;
@@ -36,13 +31,30 @@ export default function InteriorModel({
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
   setShowInterior: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const selectedFloor = useStore((state) => state.selectedFloor);
+  const selectedBuilding = useStore((state) => state.selectedBuilding);
   const interior = useGLTF(
-    `3Ds/${city?.title}/${selectedBuilding?.id}/${selectedFloor?.floorIndex}.glb`
+    `3Ds/${city?.title}/${selectedBuilding?.id}/${selectedFloor}.glb`
   );
   const { camera } = useThree();
   const [isDeveloping, setIsDeveloping] = useState(false);
   const [cameras, setCameras] = useState<CameraType[]>([]);
-  const [ACs, setACs] = useState<AcType[]>([]);
+  const ACs = useStore((state) => state.ACs);
+  const setACs = useStore((state) => state.setACs);
+  const setCameraPosition = useStore((state) => state.setCameraPosition);
+
+  useFrame(() => {
+    // Camera State Logic
+    if (camera) {
+      setCameraPosition(camera.position);
+    }
+  });
+
+  useEffect(() => {
+    console.log(ACs);
+    const upload = ACs.filter((ac) => ac.id);
+    console.log(upload);
+  }, [ACs]);
 
   // Debug Controls
   const { ShowAC } = useControls({
@@ -94,6 +106,7 @@ export default function InteriorModel({
       }
     }
   }, [interior, InteriorRef, ShowAC]);
+  /*
   useEffect(() => {
     if (heatMap && InteriorRef.current) {
       const targetPosition = new THREE.Vector3(790, 240, 100);
@@ -113,12 +126,11 @@ export default function InteriorModel({
         if (InteriorRef.current) {
           tmp.lookAt(InteriorRef.current.position);
         }
-*/
+
         //console.log(tmp.quaternion);
         // Interpolate orientation
         //camera.quaternion.slerp(tmp.quaternion, 0.1); // smoother interpolation
         camera.position.lerpVectors(from, to, t);
-
         camera.lookAt(InteriorRef.current!.position);
 
         camera.rotation.set(
@@ -133,49 +145,61 @@ export default function InteriorModel({
       animate();
       //controlsRef.current.enabled = false;
     }
-  }, [heatMap]);
+  }, [heatMap]);*/
 
   // Fetch Devices..
   useEffect(() => {
     const fetchDevices = async () => {
+      console.log(selectedBuilding?.id, selectedFloor);
+
       const { data, error } = await supabase
         .from("Cameras")
         .select("*")
-        .order("id", { ascending: true });
-      if (data) {
-        //console.log(data);
-        if (!cameras.length) {
-          setCameras(
-            data.map((dvc) => {
-              return {
-                id: dvc.id,
-                uniqueId: dvc.uniqueId,
-                ip: dvc.ip,
-                mac: dvc.mac,
-                model: dvc.model,
-                vendor: dvc.vendor,
-                port: dvc.port,
-                username: dvc.username,
-                password: dvc.password,
-                notes: dvc.notes,
-                mode: dvc.mode,
-                floor: dvc.floor,
-                buildingId: dvc.buildingId,
+        .order("id", { ascending: true })
+        .eq("buildingId", selectedBuilding?.id)
+        .eq("floor", selectedFloor);
+      console.log(data);
 
-                title: dvc.title,
-                position: { x: dvc.x, y: dvc.y, z: dvc.z },
-                rotation: { x: dvc.rot_x, y: dvc.rot_y, z: dvc.rot_z },
-                show: dvc.show,
-              };
-            })
-          );
+      const ACsFetched = await supabase
+        .from("ACs")
+        .select("*")
+        .eq("buildingId", selectedBuilding?.id);
+      //.eq("floor", selectedFloor);
+      if (data && ACsFetched) {
+        //console.log(data);
+        setCameras(
+          data.map((dvc) => {
+            return {
+              id: dvc.id,
+              uniqueId: dvc.uniqueId,
+              ip: dvc.ip,
+              mac: dvc.mac,
+              model: dvc.model,
+              vendor: dvc.vendor,
+              port: dvc.port,
+              username: dvc.username,
+              password: dvc.password,
+              notes: dvc.notes,
+              mode: dvc.mode,
+              floor: dvc.floor,
+              buildingId: dvc.buildingId,
+
+              title: dvc.title,
+              position: { x: dvc.x, y: dvc.y, z: dvc.z },
+              rotation: { x: dvc.rot_x, y: dvc.rot_y, z: dvc.rot_z },
+              show: dvc.show,
+            };
+          })
+        );
+        if (ACsFetched.data) {
+          setACs(ACsFetched.data);
         }
       } else {
         console.log(error);
       }
     };
     fetchDevices();
-  }, []);
+  }, [selectedBuilding, selectedFloor]);
   // Avoiding Noisy errors :-)
   window.addEventListener("error", (event) => {
     if (
@@ -211,7 +235,7 @@ export default function InteriorModel({
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "c") {
-        if (isDeveloping && selectedFloor?.floorIndex && selectedBuilding?.id) {
+        if (isDeveloping && selectedFloor && selectedBuilding) {
           const newCam: CameraType = {
             uniqueId: crypto.randomUUID(),
             title: "Placed Camera",
@@ -223,8 +247,8 @@ export default function InteriorModel({
             username: "admin",
             password: "admin#1@go.dubai",
             notes: "",
-            floor: selectedFloor?.floorIndex,
-            buildingId: selectedBuilding?.id,
+            floor: selectedFloor,
+            buildingId: selectedBuilding.id,
             position: {
               x: camera.position.x,
               y: camera.position.y,
@@ -343,14 +367,8 @@ export default function InteriorModel({
                 show: true,
               })
               .select("*");
-            console.log(data);
-            setACs((prev) => {
-              const updated = prev.map((ac) =>
-                ac.uniqueId === ac.uniqueId ? { ...ac, id: data![0].id } : ac
-              );
-              console.log("Updated ACs:", updated); // See the actual result
-              return updated;
-            });
+            const fetchedACs: AcType[] = data!;
+            setACs(fetchedACs);
             console.log(data, error || "Inserted successfully");
           }
         });
@@ -742,7 +760,7 @@ export default function InteriorModel({
           }
         )}*/}
       {cameras
-        .filter((cam) => cam.show)
+        .filter((cam) => cam.show && cam.floor === selectedFloor)
         .map((cam) => (
           <Cctv
             cam={cam}
@@ -754,15 +772,20 @@ export default function InteriorModel({
             onUpdatePosition={onUpdatePosition}
           />
         ))}
-      {ACs.filter((ac) => ac.show).map((ac) => (
-        <AC
-          ac={ac}
-          ShowAC={ShowAC}
-          isDeveloping={isDeveloping}
-          key={ac.uniqueId}
-          onUpdatePosition={onUpdatePosition}
-        />
-      ))}
+      {ACs.filter((ac) => ac.show).map((ac) => {
+        if (ac.floorId !== selectedFloor) {
+          return null;
+        }
+        return (
+          <AC
+            ac={ac}
+            ShowAC={ShowAC}
+            isDeveloping={isDeveloping}
+            key={ac.uniqueId}
+            onUpdatePosition={onUpdatePosition}
+          />
+        );
+      })}
       {ShowAC &&
         mockACs.map((ac) => (
           <ACOverlay ac={ac} isDeveloping={false} key={ac.uniqueId + ac.id} />

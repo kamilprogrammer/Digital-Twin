@@ -1,17 +1,16 @@
 import { Plus, Layers2 } from "lucide-react";
 import * as THREE from "three";
 import { Floor, Building, City } from "@/types";
+import { useStore } from "@/store/useStore";
+import { useEffect } from "react";
 interface SidebarProps {
   setCameraTarget: React.Dispatch<React.SetStateAction<THREE.Vector3 | null>>;
   lockEnabled: boolean;
   setLockEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   city: City;
-  building: Building;
   floors: Floor[];
-  camera: THREE.Vector3;
   onNavigate?: (path: string) => void;
   setShowInterior?: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedFloor: React.Dispatch<React.SetStateAction<Floor | null>>;
 }
 
 export default function Sidebar({
@@ -19,12 +18,19 @@ export default function Sidebar({
   lockEnabled,
   setLockEnabled,
   floors,
-  building,
   city,
-  camera,
   setShowInterior,
-  setSelectedFloor,
 }: SidebarProps) {
+  const { addAC } = useStore();
+  const cameraPosition = useStore((state) => state.cameraPosition);
+  const selectedFloor = useStore((state) => state.selectedFloor);
+  const selectedBuilding = useStore((state) => state.selectedBuilding);
+  const setSelectedFloor = useStore((state) => state.setSelectedFloor);
+  const ACs = useStore((state) => state.ACs);
+
+  useEffect(() => {
+    console.log(ACs);
+  }, [ACs]);
   return (
     <div className="fixed top-0 left-0 z-60 w-[12vw]">
       <aside
@@ -34,7 +40,7 @@ export default function Sidebar({
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800 rounded-xl m-2 mr-1">
           <h2 className="text-lg p-1 pb-0 pl-2 font-semibold text-gray-900 dark:text-white">
-            {building.title}
+            {selectedBuilding?.title}
           </h2>
           <h4 className="text-sm p-1 pb-4 pl-2 font-normal text-gray-400 dark:text-white">
             floors :
@@ -46,9 +52,11 @@ export default function Sidebar({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedFloor(floor);
+                    setSelectedFloor(floor.floorIndex || 1);
                   }}
-                  className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                  className={`${
+                    selectedFloor === floor.floorIndex ? "bg-neutral-200" : " "
+                  } flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}
                 >
                   <Layers2 className="w-5 h-5 text-gray-500" />
                   <span className="ms-3">{floor.title}</span>
@@ -62,6 +70,31 @@ export default function Sidebar({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+                  console.log(selectedBuilding);
+                  console.log(cameraPosition);
+                  if (selectedBuilding) {
+                    addAC({
+                      uniqueId: crypto.randomUUID(),
+                      title: "Placed AC",
+                      mac: "",
+                      model: "",
+                      vendor: "",
+                      notes: "",
+                      floorId: selectedFloor,
+                      buildingId: selectedBuilding?.id,
+                      position: {
+                        x: cameraPosition.x,
+                        y: cameraPosition.y,
+                        z: cameraPosition.z,
+                      },
+                      rotation: {
+                        x: 0,
+                        y: 0,
+                        z: 0,
+                      },
+                      show: true,
+                    });
+                  }
                 }}
                 className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >

@@ -4,9 +4,6 @@ import Scene from "./Scene";
 import { Building, Floor, City } from "@/types";
 
 export function GLTFModels({
-  selectedBuilding,
-  selectedFloor,
-  setSelectedFloor,
   lockEnabled,
   city,
   heatMap,
@@ -19,9 +16,6 @@ export function GLTFModels({
   setShowStream,
   setStreamValue,
 }: {
-  selectedBuilding: Building | null;
-  selectedFloor: Floor | null;
-  setSelectedFloor: React.Dispatch<React.SetStateAction<Floor | null>>;
   lockEnabled: boolean;
   city: City | null;
   heatMap: boolean;
@@ -40,9 +34,6 @@ export function GLTFModels({
   return (
     <Scene
       city={city || null}
-      selectedBuilding={selectedBuilding}
-      selectedFloor={selectedFloor}
-      setSelectedFloor={setSelectedFloor}
       dubai={dubai}
       drone={drone}
       heatMap={heatMap}
