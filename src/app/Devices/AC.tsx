@@ -4,10 +4,10 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import type { AcType } from "../../types/AcType";
 import { motion } from "framer-motion";
-import Badge from "../Add-ons/Badge";
 import { Switch } from "../../components/ui/switch";
 import { useFrame } from "@react-three/fiber";
 import { supabase } from "../../supabase-digital-twin";
+import AcBadge from "../Add-ons/AC-Badge";
 
 type Props = {
   ac: AcType;
@@ -47,7 +47,7 @@ export default function AC({
 
     if (ac.id) {
       const { data, error } = await supabase
-        .from("Cameras")
+        .from("ACs")
         .update({ mode: "INACTIVE" })
         .eq("id", ac.id);
       if (error) {
@@ -63,7 +63,7 @@ export default function AC({
     console.log(ac.id);
     if (ac.id) {
       const { data, error } = await supabase
-        .from("Cameras")
+        .from("ACs")
         .update({ mode: "ACTIVE" })
         .eq("id", ac.id);
       if (error) {
@@ -136,13 +136,13 @@ export default function AC({
           rotation={[StaticRotation.x, StaticRotation.y, StaticRotation.z]}
         >
           {!isDeveloping && (
-            <Badge
+            <AcBadge
               active={active}
-              position={[1.1, 0.5, 0]}
+              position={[-3, 3, 1]}
               scale={[0.75, 0.75]}
             />
           )}
-          <primitive object={scene.clone()} scale={[0.8, 0.8, 0.8]} />
+          <primitive object={scene.clone()} scale={[1, 1, 1]} />
           {hovered && !isDeveloping && (
             <Html distanceFactor={60} position={[2, 0, 0]} center>
               <motion.div
@@ -154,7 +154,7 @@ export default function AC({
               >
                 <div className="bg-white/50 backdrop-blur-sm shadow-xl rounded-xl p-4 text-xs text-gray-800 w-64 border border-gray-200">
                   <h3 className="flex items-center justify-center font-cairo text-sm font-bold font-weight-bold mb-2 text-black">
-                    {ac.title || "Camera #1"}
+                    {ac.title || "AC #1"}
                   </h3>
                   <ul className="space-y-1">
                     {ac.mac && (
