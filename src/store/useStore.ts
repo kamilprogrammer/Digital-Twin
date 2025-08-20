@@ -3,6 +3,12 @@ import * as THREE from "three";
 import { AcType, Floor, Building } from "@/types";
 
 interface StoreState {
+  developingMode: boolean;
+  setDevelopingMode: (mode: boolean) => void;
+
+  outsideMode: boolean;
+  setOutsideMode: (mode: boolean) => void;
+
   ACs: AcType[];
   setACs: (acs: AcType[]) => void;
   addAC: (ac: AcType) => void;
@@ -25,6 +31,12 @@ interface StoreState {
 }
 
 export const useStore = create<StoreState>((set) => ({
+  developingMode: false,
+  setDevelopingMode: (mode: boolean) => set({ developingMode: mode }),
+
+  outsideMode: false,
+  setOutsideMode: (mode: boolean) => set({ outsideMode: mode }),
+
   ACs: [],
   setACs: (acs) => set((state) => ({ ACs: acs })),
   addAC: (ac) => set((state) => ({ ACs: [...state.ACs, ac] })),
@@ -32,7 +44,7 @@ export const useStore = create<StoreState>((set) => ({
     set((state) => ({ ACs: state.ACs.filter((ac) => ac.id !== id) })),
   selectedFloor: 1,
   setSelectedFloor: (floor: number) => set({ selectedFloor: floor }),
-  selectedBuilding: null,
+  selectedBuilding: { title: "", cityId: 1 },
   setSelectedBuilding: (building: Building | null) =>
     set({ selectedBuilding: building }),
   selectedAsset: null,

@@ -142,7 +142,7 @@ export default function AC({
               scale={[0.75, 0.75]}
             />
           )}
-          <primitive object={scene.clone()} scale={[1, 1, 1]} />
+          <primitive object={scene.clone()} scale={[2, 2, 2]} />
           {hovered && !isDeveloping && (
             <Html distanceFactor={60} position={[2, 0, 0]} center>
               <motion.div

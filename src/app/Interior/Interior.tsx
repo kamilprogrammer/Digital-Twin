@@ -248,7 +248,7 @@ export default function InteriorModel({
             password: "admin#1@go.dubai",
             notes: "",
             floor: selectedFloor,
-            buildingId: selectedBuilding.id,
+            buildingId: selectedBuilding?.id,
             position: {
               x: camera.position.x,
               y: camera.position.y,
@@ -393,7 +393,7 @@ export default function InteriorModel({
             camera.quaternion.slerp(targetQuaternion, 0.1);
             if (t < 1) requestAnimationFrame(animate);
             else {
-              setShowInterior(false); // Midway: switch content
+              setShowInterior(false);
             }
           };
 

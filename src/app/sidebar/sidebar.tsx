@@ -1,4 +1,4 @@
-import { Plus, Layers2 } from "lucide-react";
+import { Plus, Layers2, UserPen, LogOut } from "lucide-react";
 import * as THREE from "three";
 import { Floor, Building, City } from "@/types";
 import { useStore } from "@/store/useStore";
@@ -100,6 +100,24 @@ export default function Sidebar({
               >
                 <Plus className="w-5 h-5 text-gray-500" />
                 <span className="ms-3">FCU/AC</span>
+              </button>
+            </li>
+            <li className="justify-center items-center">
+              <button
+                onClick={(e) => {}}
+                className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <UserPen className="w-5 h-5 text-gray-500" />
+                <span className="ms-3">Developing Mode</span>
+              </button>
+            </li>
+            <li className="justify-center items-center">
+              <button
+                onClick={(e) => {}}
+                className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <LogOut className="w-5 h-5 text-gray-500" />
+                <span className="ms-3">Exit & Go Outside</span>
               </button>
             </li>
           </ul>

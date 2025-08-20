@@ -18,7 +18,7 @@ export type AcType = {
     z: number;
   };
   floorId: number;
-  buildingId: number;
+  buildingId?: number;
   mode?: string;
   show: boolean;
 };
