@@ -115,6 +115,7 @@ export default function Scene({
   const selectedBuilding = useStore((state) => state.selectedBuilding);
   const setCameraTarget = useStore((state) => state.setCameraTarget);
   const { cameraTarget, cameraTargetRotation } = useStore();
+  const showDrone = useStore((state) => state.showDrone);
 
   useEffect(() => {
     console.log(cameraTarget);
@@ -226,7 +227,7 @@ export default function Scene({
           heatMap={heatMap}
         />
       }
-      {ShowDrone && !showInterior && (
+      {showDrone && !showInterior && (
         <Float
           speed={1}
           floatIntensity={0.1}

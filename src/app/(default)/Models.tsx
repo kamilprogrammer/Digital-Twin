@@ -31,13 +31,6 @@ export function GLTFModels({
 }) {
   const dubai = useGLTF(`/${city?.title}.glb`);
   const drone = useGLTF("/drone.glb");
-
-  useEffect(() => {
-    if (showInterior) {
-      dubai.scene.clear();
-    }
-  }, [showInterior]);
-
   return (
     <Scene
       dubai={dubai}

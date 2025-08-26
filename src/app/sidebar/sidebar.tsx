@@ -1,24 +1,12 @@
 import { Plus, Layers2, UserPen, LogOut } from "lucide-react";
 import * as THREE from "three";
-import { Floor, Building, City } from "@/types";
+import { Floor } from "@/types";
 import { useStore } from "@/store/useStore";
-import { useEffect } from "react";
 interface SidebarProps {
-  setCameraTarget: React.Dispatch<React.SetStateAction<THREE.Vector3 | null>>;
-  lockEnabled: boolean;
-  setLockEnabled: React.Dispatch<React.SetStateAction<boolean>>;
-  city: City;
   floors: Floor[];
-  onNavigate?: (path: string) => void;
 }
 
-export default function Sidebar({
-  setCameraTarget,
-  lockEnabled,
-  setLockEnabled,
-  floors,
-  city,
-}: SidebarProps) {
+export default function Sidebar({ floors }: SidebarProps) {
   const { addAC } = useStore();
   const cameraPosition = useStore((state) => state.cameraPosition);
   const selectedFloor = useStore((state) => state.selectedFloor);
@@ -28,11 +16,8 @@ export default function Sidebar({
   const isDeveloping = useStore((state) => state.isDeveloping);
   const setIsDeveloping = useStore((state) => state.setIsDeveloping);
 
-  useEffect(() => {
-    console.log(ACs);
-  }, [ACs]);
-
-  const { setIsTransitioning, setCameraTargetRotation } = useStore();
+  const { setCameraTarget, setCameraTargetRotation, setSelectedBuilding } =
+    useStore();
   const setShowInterior = useStore((state) => state.setInteriorMode);
   return (
     <div className="fixed top-0 left-0 z-60 w-[12vw]">
@@ -123,10 +108,12 @@ export default function Sidebar({
             <li className="justify-center items-center">
               <button
                 onClick={(e) => {
-                  setIsTransitioning(true);
-                  setCameraTarget(new THREE.Vector3(0, 60, 0));
-                  setCameraTargetRotation(new THREE.Euler(0, Math.PI / 2, 0));
-                  setTimeout(() => setIsTransitioning(false), 2000);
+                  setCameraTarget(new THREE.Vector3(0, 80, 0));
+                  setCameraTargetRotation(
+                    new THREE.Euler(0, -(Math.PI / 2), 0)
+                  );
+                  setTimeout(() => setShowInterior(false), 500);
+                  setTimeout(() => setSelectedBuilding(null), 1250);
                 }}
                 className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >

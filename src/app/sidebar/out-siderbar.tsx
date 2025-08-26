@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Building2, ArrowBigRightDash } from "lucide-react";
+import { Building2, ArrowBigRightDash, Drone } from "lucide-react";
 import { Building } from "@/types/Building";
 import { City } from "@/types/City";
 import * as THREE from "three";
@@ -17,7 +16,7 @@ export default function OutSidebar({
   buildings,
   city,
 }: SidebarProps) {
-  const { setCameraTargetRotation, setCameraTarget, setIsTransitioning } =
+  const { setCameraTargetRotation, setCameraTarget, showDrone, setShowDrone } =
     useStore();
   return (
     <div className="fixed top-0 left-0 z-60 w-[12vw]">
@@ -74,6 +73,19 @@ export default function OutSidebar({
             ))}
             <li className="justify-start items-start">
               <div className="ml-2 h-[0.2] w-[7vw] bg-black opacity-15"></div>
+            </li>
+            <li className="justify-center items-center">
+              <button
+                onClick={(e) => {
+                  setShowDrone(!showDrone);
+                }}
+                className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <Drone className="w-5 h-5 text-gray-500" />
+                <span className="ms-3">
+                  {showDrone ? "Hide Drone" : "Show Drone"}
+                </span>
+              </button>
             </li>
           </ul>
         </div>

@@ -43,6 +43,9 @@ interface StoreState {
 
   uiPanelOpen: boolean;
   setUiPanelOpen: (open: boolean) => void;
+
+  showDrone: boolean;
+  setShowDrone: (showDrone: boolean) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -91,4 +94,7 @@ export const useStore = create<StoreState>((set) => ({
 
   uiPanelOpen: false,
   setUiPanelOpen: (open: boolean) => set({ uiPanelOpen: open }),
+
+  showDrone: false,
+  setShowDrone: (showDrone: boolean) => set({ showDrone: showDrone }),
 }));

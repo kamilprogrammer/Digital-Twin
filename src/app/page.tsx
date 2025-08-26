@@ -15,7 +15,6 @@ import { useEffect } from "react";
 import { City, Floor, Building } from "@/types";
 import CityDialog from "./sidebar/dialog";
 import * as THREE from "three";
-import CameraAnimator from "./Camera/CameraAnimator";
 import { InfinitySpin } from "react-loader-spinner";
 import { useStore } from "@/store/useStore";
 
@@ -177,16 +176,7 @@ export default function Page() {
           <div className="flex fixed h-screen w-screen p-2 bg-gray-400 overflow-x-hidden overflow-y-hidden top-0 left-0">
             <div className="w-[12vw] p-2 pointer-events-auto">
               {showInterior ? (
-                <Sidebar
-                  city={selectedCity}
-                  lockEnabled={lockEnabled}
-                  setLockEnabled={setLockEnabled}
-                  floors={floors}
-                  onNavigate={(path) => {
-                    router.push(path);
-                  }}
-                  setCameraTarget={setCameraTarget}
-                />
+                <Sidebar floors={floors} />
               ) : (
                 <OutSidebar
                   setShowInterior={setShowInterior}
