@@ -20,7 +20,7 @@ export default function CitiesDropdown({
 }: {
   cities: City[];
   city: City | null;
-  setCity: React.Dispatch<React.SetStateAction<City | null>>;
+  setCity: (city: City | null) => void;
 }) {
   return (
     <DropdownMenu>

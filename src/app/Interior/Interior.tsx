@@ -29,7 +29,7 @@ export default function InteriorModel({
   setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
   setShowStream: React.Dispatch<React.SetStateAction<boolean>>;
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
-  setShowInterior: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowInterior: (showInterior: boolean) => void;
 }) {
   const selectedFloor = useStore((state) => state.selectedFloor);
   const selectedBuilding = useStore((state) => state.selectedBuilding);
@@ -37,11 +37,12 @@ export default function InteriorModel({
     `3Ds/${city?.title}/${selectedBuilding?.id}/${selectedFloor}.glb`
   );
   const { camera } = useThree();
-  const [isDeveloping, setIsDeveloping] = useState(false);
   const [cameras, setCameras] = useState<CameraType[]>([]);
   const ACs = useStore((state) => state.ACs);
   const setACs = useStore((state) => state.setACs);
   const setCameraPosition = useStore((state) => state.setCameraPosition);
+  const isDeveloping = useStore((state) => state.isDeveloping);
+  const setIsDeveloping = useStore((state) => state.setIsDeveloping);
 
   useFrame(() => {
     // Camera State Logic
@@ -65,6 +66,8 @@ export default function InteriorModel({
 
   // removing the FCUs
   useEffect(() => {
+    console.log(InteriorRef.current);
+
     if (!ShowAC) {
       if (InteriorRef.current) {
         console.log("removing FCUs");
@@ -100,6 +103,19 @@ export default function InteriorModel({
             const fcu = InteriorRef.current.getObjectByName("FCU0" + i);
             if (fcu) {
               fcu!.visible = true;
+            }
+          }
+        }
+        for (let i = 94; i < 117; i++) {
+          if (i < 100) {
+            const line = InteriorRef.current.getObjectByName("Line0" + i);
+            if (line) {
+              line!.visible = false;
+            }
+          } else {
+            const line = InteriorRef.current.getObjectByName("Line" + i);
+            if (line) {
+              line!.visible = false;
             }
           }
         }
@@ -234,7 +250,7 @@ export default function InteriorModel({
 
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "c") {
+      /*if (e.key.toLowerCase() === "c") {
         if (isDeveloping && selectedFloor && selectedBuilding) {
           const newCam: CameraType = {
             uniqueId: crypto.randomUUID(),
@@ -263,7 +279,7 @@ export default function InteriorModel({
           };
           setCameras((prev) => [...prev, newCam]);
         }
-      }
+      }*/
       if (e.key === "Delete" && !heatMap) {
         if (cameras[cameras.length - 1].id) {
           const { data, error } = await supabase
@@ -400,12 +416,6 @@ export default function InteriorModel({
           animate();
         }
         triggerEnterBuilding();
-      }
-      if (e.key === "p" && !heatMap) {
-        setIsDeveloping(!isDeveloping);
-      }
-      if (e.key === "0" && !heatMap) {
-        console.log(camera.position);
       }
     };
 

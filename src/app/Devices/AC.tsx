@@ -135,16 +135,16 @@ export default function AC({
           position={[StaticPosition.x, StaticPosition.y, StaticPosition.z]}
           rotation={[StaticRotation.x, StaticRotation.y, StaticRotation.z]}
         >
-          {!isDeveloping && (
+          {/*{!isDeveloping && (
             <AcBadge
               active={active}
               position={[-3, 3, 1]}
               scale={[0.75, 0.75]}
             />
-          )}
+          )}*/}
           <primitive object={scene.clone()} scale={[2, 2, 2]} />
           {hovered && !isDeveloping && (
-            <Html distanceFactor={60} position={[2, 0, 0]} center>
+            <Html distanceFactor={70} position={[0, 0, 0]} center>
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}

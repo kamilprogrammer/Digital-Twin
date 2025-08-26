@@ -1,27 +1,24 @@
 import { useEffect, useState } from "react";
-import { Building2 } from "lucide-react";
+import { Building2, ArrowBigRightDash } from "lucide-react";
 import { Building } from "@/types/Building";
 import { City } from "@/types/City";
 import * as THREE from "three";
+import { useStore } from "@/store/useStore";
 interface SidebarProps {
-  setCameraTarget: React.Dispatch<React.SetStateAction<THREE.Vector3 | null>>;
+  setShowInterior: (showInterior: boolean) => void;
+  setSelectedBuilding: (building: Building | null) => void;
   city: City;
   buildings: Building[];
-  camera: THREE.Vector3;
-  onNavigate?: (path: string) => void;
-  setShowInterior?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function OutSidebar({
-  setCameraTarget,
-
+  setShowInterior,
+  setSelectedBuilding,
   buildings,
   city,
-  camera,
-  setShowInterior,
 }: SidebarProps) {
-  const [selected, setSelected] = useState<number>();
-
+  const { setCameraTargetRotation, setCameraTarget, setIsTransitioning } =
+    useStore();
   return (
     <div className="fixed top-0 left-0 z-60 w-[12vw]">
       <aside
@@ -39,11 +36,14 @@ export default function OutSidebar({
 
           <ul className="space-y-2 font-normal text-xs">
             {buildings.map((building) => (
-              <li key={building.id} className="justify-center items-center">
+              <li
+                key={building.id}
+                className="justify-center items-center flex"
+              >
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelected(building.id);
+                    setSelectedBuilding(building);
                     setCameraTarget(
                       new THREE.Vector3(
                         Number(building.pos_x),
@@ -52,10 +52,22 @@ export default function OutSidebar({
                       )
                     );
                   }}
-                  className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                  className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 mr-1 bg-gray-100 dark:hover:bg-gray-700 group"
                 >
                   <Building2 className="w-5 h-5 text-gray-500" />
                   <span className="ms-3">{building.title}</span>
+                </button>
+                <button
+                  className="ml-auto items-center justify-center p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                  onClick={() => {
+                    setSelectedBuilding(building);
+                    setIsTransitioning(true);
+                    setCameraTarget(new THREE.Vector3(1010, 10, 20));
+                    setCameraTargetRotation(new THREE.Euler(0, Math.PI / 2, 0));
+                    setTimeout(() => setIsTransitioning(false), 2000);
+                  }}
+                >
+                  <ArrowBigRightDash className="w-5 h-5 text-gray-500" />
                 </button>
               </li>
             ))}

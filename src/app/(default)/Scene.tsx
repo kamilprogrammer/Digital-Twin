@@ -15,13 +15,11 @@ import {
   GLTF,
   PointerLockControls as PointerLockControlsImpl,
 } from "three-stdlib";
-import { Floor } from "@/types";
 import { InfinitySpin } from "react-loader-spinner";
-import { Building, City } from "@/types";
+import { City } from "@/types";
 import { useStore } from "@/store/useStore";
 
 export default function Scene({
-  city,
   lockEnabled,
   dubai,
   drone,
@@ -35,7 +33,6 @@ export default function Scene({
   isTransitioning,
   setIsTransitioning,
 }: {
-  city: City | null;
   lockEnabled: boolean;
   dubai: GLTF;
   drone: GLTF;
@@ -45,10 +42,12 @@ export default function Scene({
   setShowStream: React.Dispatch<React.SetStateAction<boolean>>;
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
   showInterior: boolean;
-  setShowInterior: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowInterior: (showInterior: boolean) => void;
   isTransitioning: boolean;
   setIsTransitioning: (b: boolean) => void;
 }) {
+  const selectedCity = useStore((state) => state.selectedCity);
+
   const DubaiRef = useRef<THREE.Object3D | null>(null);
   //const DroneRef = useRef<THREE.Object3D | null>(null);
   const buttonRef = useRef<THREE.Mesh | null>(null);
@@ -61,6 +60,7 @@ export default function Scene({
   const setCameraPosition = useStore((state) => state.setCameraPosition);
   const selectedFloor = useStore((state) => state.selectedFloor);
   const cameraPosition = useStore((state) => state.cameraPosition);
+
   function triggerEnterBuilding() {
     const targetPosition = new THREE.Vector3(1010, 10, 20);
     let t = 0;
@@ -100,7 +100,7 @@ export default function Scene({
     lookingRef.current = isLooking;
   });
 
-  useEffect(() => {
+  /*useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "e" && lookingRef.current && !showInterior) {
         triggerEnterBuilding();
@@ -110,7 +110,7 @@ export default function Scene({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, []);*/
 
   const controls = useControls(
     "HeatMap - TopView",
@@ -136,6 +136,33 @@ export default function Scene({
     [showInterior]
   );
 
+  function CameraController() {
+    const camera = useThree((state) => state.camera);
+    const { cameraTarget, cameraTargetRotation } = useStore();
+    let t = 0;
+    const from = camera.position.clone();
+    console.log(cameraTarget);
+    const to = cameraTarget.clone();
+
+    const animate = () => {
+      t += 0.01;
+      camera.position.lerpVectors(from, to, t);
+      const targetEuler = new THREE.Euler(0, Math.PI / 2, 0); // yaw: 90 degrees
+      const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
+
+      camera.quaternion.slerp(targetQuaternion, 0.1); // 0.1 is interpolation speed
+      if (t < 1) requestAnimationFrame(animate);
+      else {
+        setTimeout(() => setShowInterior(true), 1000); // Midway: switch content
+        setTimeout(() => setIsTransitioning(false), 2000); // Finish transition
+      }
+    };
+
+    animate();
+
+    return null;
+  }
+
   return (
     <>
       {/* ---------- OUTSIDE (city + drone) ---------- */}
@@ -160,13 +187,14 @@ export default function Scene({
           </mesh>
 
           {/* “Press E” prompt (only when aiming and not during transition) */}
-          {isLookingAtButton && !isTransitioning && (
+          {/*{isLookingAtButton && !isTransitioning && (
             <Html position={[510, 110, 56]} distanceFactor={100}>
               <Button variant="default" size="lg">
                 Press <b>E</b> to enter
               </Button>
             </Html>
-          )}
+          )}*/}
+          {isTransitioning && <CameraController />}
 
           {/* Labels */}
           <Text
@@ -259,7 +287,7 @@ export default function Scene({
             }
           >
             <InteriorModel
-              city={city}
+              city={selectedCity}
               InteriorRef={InteriorRef}
               showInterior={showInterior}
               showStream={showStream}

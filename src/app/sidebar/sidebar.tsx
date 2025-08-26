@@ -10,7 +10,6 @@ interface SidebarProps {
   city: City;
   floors: Floor[];
   onNavigate?: (path: string) => void;
-  setShowInterior?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Sidebar({
@@ -19,7 +18,6 @@ export default function Sidebar({
   setLockEnabled,
   floors,
   city,
-  setShowInterior,
 }: SidebarProps) {
   const { addAC } = useStore();
   const cameraPosition = useStore((state) => state.cameraPosition);
@@ -27,10 +25,15 @@ export default function Sidebar({
   const selectedBuilding = useStore((state) => state.selectedBuilding);
   const setSelectedFloor = useStore((state) => state.setSelectedFloor);
   const ACs = useStore((state) => state.ACs);
+  const isDeveloping = useStore((state) => state.isDeveloping);
+  const setIsDeveloping = useStore((state) => state.setIsDeveloping);
 
   useEffect(() => {
     console.log(ACs);
   }, [ACs]);
+
+  const { setIsTransitioning, setCameraTargetRotation } = useStore();
+  const setShowInterior = useStore((state) => state.setInteriorMode);
   return (
     <div className="fixed top-0 left-0 z-60 w-[12vw]">
       <aside
@@ -104,16 +107,27 @@ export default function Sidebar({
             </li>
             <li className="justify-center items-center">
               <button
-                onClick={(e) => {}}
+                onClick={(e) => {
+                  setIsDeveloping(!isDeveloping);
+                }}
                 className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <UserPen className="w-5 h-5 text-gray-500" />
-                <span className="ms-3">Developing Mode</span>
+                <span className="ms-3">
+                  {isDeveloping
+                    ? "Exit Developing Mode"
+                    : "Enter Developing Mode"}
+                </span>
               </button>
             </li>
             <li className="justify-center items-center">
               <button
-                onClick={(e) => {}}
+                onClick={(e) => {
+                  setIsTransitioning(true);
+                  setCameraTarget(new THREE.Vector3(0, 60, 0));
+                  setCameraTargetRotation(new THREE.Euler(0, Math.PI / 2, 0));
+                  setTimeout(() => setIsTransitioning(false), 2000);
+                }}
                 className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <LogOut className="w-5 h-5 text-gray-500" />

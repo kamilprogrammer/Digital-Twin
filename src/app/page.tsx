@@ -1,7 +1,7 @@
 "use client";
 import "./globals.css";
 import { Canvas } from "@react-three/fiber";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Leva } from "leva";
@@ -20,46 +20,54 @@ import { InfinitySpin } from "react-loader-spinner";
 import { useStore } from "@/store/useStore";
 
 export default function Page() {
-  const [showInterior, setShowInterior] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const showInterior = useStore((state) => state.InteriorMode);
+  const setShowInterior = useStore((state) => state.setInteriorMode);
+
+  const isTransitioning = useStore((state) => state.isTransitioning);
+  const setIsTransitioning = useStore((state) => state.setIsTransitioning);
+
   const [showStream, setShowStream] = useState(false);
   const [streamValue, setStreamValue] = useState("in");
   const [heatMap, setHeatMap] = useState(false);
 
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [floors, setFloors] = useState<Floor[]>([]);
-  const [city, setCity] = useState<City | null>(null);
+  // Using selectedCity from store instead of local city state
 
-  const [camera, setCamera] = useState<THREE.Vector3>(new THREE.Vector3());
   const [lockEnabled, setLockEnabled] = useState(false);
   const [cameraTarget, setCameraTarget] = useState<THREE.Vector3 | null>(null);
   const [overlay, setOverlay] = useState(true);
 
   const selectedBuilding = useStore((state) => state.selectedBuilding);
   const setSelectedBuilding = useStore((state) => state.setSelectedBuilding);
+
+  const selectedCity = useStore((state) => state.selectedCity);
+  const setSelectedCity = useStore((state) => state.setSelectedCity);
+
+  const camera = useRef(null);
+
   // Fetching Buildings from Supabase (Baas)
   useEffect(() => {
     const fetchBuildings = async () => {
-      if (!city) return;
+      if (!selectedCity) return;
       const { data, error } = await supabase
         .from("Buildings")
         .select("*")
-        .eq("cityId", city.id);
+        .eq("cityId", selectedCity.id);
       if (error) {
         console.error("Error fetching buildings:", error);
       } else {
         setBuildings(data);
-        setSelectedBuilding(data[0]);
       }
     };
     fetchBuildings();
-  }, [city]);
+  }, [selectedCity]);
 
   // Fetching Floors from Supabase (Baas)
   useEffect(() => {
     if (!selectedBuilding) return;
     const fetchFloors = async () => {
-      if (!city) return;
+      if (!selectedCity) return;
       const { data, error } = await supabase
         .from("Floors")
         .select("*")
@@ -72,7 +80,7 @@ export default function Page() {
       }
     };
     fetchFloors();
-  }, [city, selectedBuilding]);
+  }, [selectedCity, selectedBuilding]);
 
   useEffect(() => {
     if (cameraTarget) {
@@ -95,16 +103,16 @@ export default function Page() {
     };
   }, []);
   useEffect(() => {
-    if (city) {
+    if (selectedCity) {
       const timer = setTimeout(() => setOverlay(false), 6000);
       return () => clearTimeout(timer);
     }
-  }, [city]);
+  }, [selectedCity]);
 
   return (
     <>
-      {city === null ? (
-        <CityDialog city={city} setCity={setCity} />
+      {!selectedCity ? (
+        <CityDialog city={selectedCity} setCity={setSelectedCity} />
       ) : (
         <>
           {overlay && (
@@ -178,10 +186,9 @@ export default function Page() {
             <div className="w-[12vw] p-2 pointer-events-auto">
               {showInterior ? (
                 <Sidebar
-                  city={city}
+                  city={selectedCity}
                   lockEnabled={lockEnabled}
                   setLockEnabled={setLockEnabled}
-                  setShowInterior={setShowInterior}
                   floors={floors}
                   onNavigate={(path) => {
                     router.push(path);
@@ -190,14 +197,10 @@ export default function Page() {
                 />
               ) : (
                 <OutSidebar
-                  camera={camera}
                   setShowInterior={setShowInterior}
-                  city={city}
+                  setSelectedBuilding={setSelectedBuilding}
+                  city={selectedCity}
                   buildings={buildings}
-                  onNavigate={(path) => {
-                    router.push(path);
-                  }}
-                  setCameraTarget={setCameraTarget}
                 />
               )}
             </div>
@@ -209,7 +212,7 @@ export default function Page() {
                 }
               }}
             >
-              <div className="pointer-events-none top-1/2 right-[44vw] fixed text-white text-2xl z-50">
+              <div className="pointer-events-none flex items-center justify-center absolute right-[44vw] top-[48vh] text-white text-2xl z-50">
                 +
               </div>
 
@@ -227,7 +230,7 @@ export default function Page() {
                 )}
                 <GLTFModels
                   lockEnabled={lockEnabled}
-                  city={city || null}
+                  city={selectedCity || null}
                   heatMap={heatMap}
                   setHeatMap={setHeatMap}
                   showInterior={showInterior}

@@ -46,6 +46,7 @@ public/drone.glb
 public/dubai.glb
 public/interior.glb
 public/*.glb
+public/3Ds/Dubai/3/*.glb
 public/*.mp4
 public/stream
 node_modules

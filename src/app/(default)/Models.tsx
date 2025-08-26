@@ -21,7 +21,7 @@ export function GLTFModels({
   heatMap: boolean;
   setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
   showInterior: boolean;
-  setShowInterior: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowInterior: (showInterior: boolean) => void;
   isTransitioning: boolean;
   setIsTransitioning: (b: boolean) => void;
   showStream: boolean;
@@ -33,7 +33,6 @@ export function GLTFModels({
 
   return (
     <Scene
-      city={city || null}
       dubai={dubai}
       drone={drone}
       heatMap={heatMap}

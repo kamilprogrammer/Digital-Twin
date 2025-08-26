@@ -73,11 +73,11 @@ export default function ACOverlay({ ac, isDeveloping }: Props) {
                 {ac.title || "Camera #1"}
               </h3>
               <ul className="space-y-1">
-                {ac.ip && (
+                {/*{ac.ip && (
                   <li className="flex items-center justify-center space-y-2 backdrop-blur-sm shadow-xl rounded-md p-2 text-xs text-gray-800 border border-gray-200">
                     <span className="font-cairo font-normal">{ac.ip}</span>
                   </li>
-                )}
+                )}*/}
                 {ac.mac && (
                   <li className="flex items-center justify-center space-y-2 backdrop-blur-sm shadow-xl rounded-md p-2 text-xs text-gray-800 border border-gray-200">
                     <span className="font-cairo font-normal">{ac.mac}</span>

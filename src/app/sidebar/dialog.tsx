@@ -17,7 +17,7 @@ export default function CityDialog({
   setCity,
 }: {
   city: City | null;
-  setCity: React.Dispatch<React.SetStateAction<City | null>>;
+  setCity: (city: City | null) => void;
 }) {
   // Fetching Cities from SupaBase
   const [cities, setCities] = useState<City[]>([]);
