@@ -131,7 +131,7 @@ export default function ACOverlay({ ac, isDeveloping }: Props) {
                       className="w-9 pl-1 py-2 data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-700"
                       checked={active}
                       disabled={Loading}
-                      onCheckedChange={async (checked) => {
+                      onCheckedChange={async (checked: boolean) => {
                         if (checked) {
                           await Activate();
                         } else {
