@@ -1,7 +1,8 @@
 "use client";
 import { useGLTF } from "@react-three/drei";
 import Scene from "./Scene";
-import { Building, Floor, City } from "@/types";
+import { City } from "@/types";
+import { useEffect } from "react";
 
 export function GLTFModels({
   lockEnabled,
@@ -30,6 +31,12 @@ export function GLTFModels({
 }) {
   const dubai = useGLTF(`/${city?.title}.glb`);
   const drone = useGLTF("/drone.glb");
+
+  useEffect(() => {
+    if (showInterior) {
+      dubai.scene.clear();
+    }
+  }, [showInterior]);
 
   return (
     <Scene

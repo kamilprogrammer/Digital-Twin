@@ -83,14 +83,6 @@ export default function Page() {
   }, [selectedCity, selectedBuilding]);
 
   useEffect(() => {
-    if (cameraTarget) {
-      setIsTransitioning(true);
-    }
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 5000);
-  }, [cameraTarget]);
-  useEffect(() => {
     function onPointerLockChange() {
       const isLocked = document.pointerLockElement !== null;
       setLockEnabled(isLocked);
@@ -220,14 +212,14 @@ export default function Page() {
                 camera={{ position: [0, 75, 75] }}
                 className="rounded-xl pointer-events-auto"
               >
-                {isTransitioning && (
+                {/*{isTransitioning && (
                   <CameraAnimator
                     showInterior={showInterior}
                     targetPosition={cameraTarget || new THREE.Vector3()}
                     isTransitioning={isTransitioning}
                     onTransitionEnd={() => setIsTransitioning(false)}
                   />
-                )}
+                )}*/}
                 <GLTFModels
                   lockEnabled={lockEnabled}
                   city={selectedCity || null}

@@ -61,30 +61,6 @@ export default function Scene({
   const selectedFloor = useStore((state) => state.selectedFloor);
   const cameraPosition = useStore((state) => state.cameraPosition);
 
-  function triggerEnterBuilding() {
-    const targetPosition = new THREE.Vector3(1010, 10, 20);
-    let t = 0;
-    const from = camera.position.clone();
-    const to = targetPosition.clone();
-
-    const animate = () => {
-      t += 0.01;
-      camera.position.lerpVectors(from, to, t);
-      const targetEuler = new THREE.Euler(0, Math.PI / 2, 0); // yaw: 90 degrees
-      const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
-
-      camera.quaternion.slerp(targetQuaternion, 0.1); // 0.1 is interpolation speed
-      if (t < 1) requestAnimationFrame(animate);
-      else {
-        setIsTransitioning(true);
-        setTimeout(() => setShowInterior(true), 1000); // Midway: switch content
-        setTimeout(() => setIsTransitioning(false), 2000); // Finish transition
-      }
-    };
-
-    animate();
-  }
-
   useFrame(() => {
     if (!buttonRef.current) return;
 
@@ -136,30 +112,41 @@ export default function Scene({
     [showInterior]
   );
 
+  const selectedBuilding = useStore((state) => state.selectedBuilding);
+  const setCameraTarget = useStore((state) => state.setCameraTarget);
+  const { cameraTarget, cameraTargetRotation } = useStore();
+
+  useEffect(() => {
+    console.log(cameraTarget);
+    if (cameraTarget && cameraTarget != null) {
+      setIsTransitioning(true);
+    }
+  }, [cameraTarget]);
+
   function CameraController() {
     const camera = useThree((state) => state.camera);
-    const { cameraTarget, cameraTargetRotation } = useStore();
     let t = 0;
+    let to: THREE.Vector3;
     const from = camera.position.clone();
-    console.log(cameraTarget);
-    const to = cameraTarget.clone();
-
+    if (cameraTarget) {
+      to = cameraTarget.clone();
+    }
     const animate = () => {
       t += 0.01;
       camera.position.lerpVectors(from, to, t);
-      const targetEuler = new THREE.Euler(0, Math.PI / 2, 0); // yaw: 90 degrees
-      const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
+      const targetQuaternion = new THREE.Quaternion().setFromEuler(
+        cameraTargetRotation
+      );
 
-      camera.quaternion.slerp(targetQuaternion, 0.1); // 0.1 is interpolation speed
-      if (t < 1) requestAnimationFrame(animate);
+      camera.quaternion.slerp(targetQuaternion, 0.05);
+      if (t < 1 && to != null) requestAnimationFrame(animate);
       else {
-        setTimeout(() => setShowInterior(true), 1000); // Midway: switch content
-        setTimeout(() => setIsTransitioning(false), 2000); // Finish transition
+        setTimeout(() => setIsTransitioning(false), 500);
+        setTimeout(() => setCameraTarget(null), 500);
       }
     };
 
     animate();
-
     return null;
   }
 

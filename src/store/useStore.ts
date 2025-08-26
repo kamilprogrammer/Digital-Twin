@@ -35,8 +35,8 @@ interface StoreState {
   cameraQuaternion: THREE.Quaternion;
   setCameraQuaternion: (quaternion: THREE.Quaternion) => void;
 
-  cameraTarget: THREE.Vector3;
-  setCameraTarget: (pos: THREE.Vector3) => void;
+  cameraTarget: THREE.Vector3 | null;
+  setCameraTarget: (pos: THREE.Vector3 | null) => void;
 
   cameraTargetRotation: THREE.Euler;
   setCameraTargetRotation: (rot: THREE.Euler) => void;
@@ -82,8 +82,8 @@ export const useStore = create<StoreState>((set) => ({
   setCameraQuaternion: (quaternion: THREE.Quaternion) =>
     set({ cameraQuaternion: quaternion }),
 
-  cameraTarget: new THREE.Vector3(0, 0, 10),
-  setCameraTarget: (pos: THREE.Vector3) => set({ cameraTarget: pos }),
+  cameraTarget: null,
+  setCameraTarget: (pos: THREE.Vector3 | null) => set({ cameraTarget: pos }),
 
   cameraTargetRotation: new THREE.Euler(0, 0, 0),
   setCameraTargetRotation: (rot: THREE.Euler) =>
