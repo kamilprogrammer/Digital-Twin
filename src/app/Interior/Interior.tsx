@@ -1,4 +1,4 @@
-import { Html, Sky, useGLTF } from "@react-three/drei";
+import { Sky, useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import type { CameraType } from "../../types/CameraType";
 import { useEffect, useState } from "react";
@@ -7,29 +7,23 @@ import * as THREE from "three";
 import { AC, Cctv, ACOverlay } from "../Devices";
 import type { AcType } from "../../types/AcType";
 import { useControls, folder } from "leva";
-import { City, Building, Floor } from "@/types";
+import { City } from "@/types";
 import { useStore } from "@/store/useStore";
 
 export default function InteriorModel({
   city,
   InteriorRef,
-  showInterior,
   showStream,
   heatMap,
-  setHeatMap,
   setShowStream,
   setStreamValue,
-  setShowInterior,
 }: {
   city: City | null;
   InteriorRef: React.RefObject<THREE.Object3D | null>;
-  showInterior: boolean;
   showStream: boolean;
   heatMap: boolean;
-  setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
   setShowStream: React.Dispatch<React.SetStateAction<boolean>>;
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
-  setShowInterior: (showInterior: boolean) => void;
 }) {
   const selectedFloor = useStore((state) => state.selectedFloor);
   const selectedBuilding = useStore((state) => state.selectedBuilding);
@@ -42,7 +36,6 @@ export default function InteriorModel({
   const setACs = useStore((state) => state.setACs);
   const setCameraPosition = useStore((state) => state.setCameraPosition);
   const isDeveloping = useStore((state) => state.isDeveloping);
-  const setIsDeveloping = useStore((state) => state.setIsDeveloping);
 
   useFrame(() => {
     // Camera State Logic
@@ -215,7 +208,7 @@ export default function InteriorModel({
       }
     };
     fetchDevices();
-  }, [selectedBuilding, selectedFloor]);
+  }, [selectedBuilding, selectedFloor, setACs]);
   // Avoiding Noisy errors :-)
   window.addEventListener("error", (event) => {
     if (
@@ -388,34 +381,6 @@ export default function InteriorModel({
             console.log(data, error || "Inserted successfully");
           }
         });
-      }
-      if (e.key === "o" && !heatMap) {
-        console.log(heatMap);
-        //setHeatMap(false);
-        function triggerEnterBuilding() {
-          const targetPosition = new THREE.Vector3(0, 10, 10);
-          let t = 0;
-          const from = camera.position.clone();
-          const to = targetPosition.clone();
-
-          const animate = () => {
-            t += 0.01;
-            camera.position.lerpVectors(from, to, t);
-            const targetEuler = new THREE.Euler(0, Math.PI / 2, 0); // yaw: 90 degrees
-            const targetQuaternion = new THREE.Quaternion().setFromEuler(
-              targetEuler
-            );
-
-            camera.quaternion.slerp(targetQuaternion, 0.1);
-            if (t < 1) requestAnimationFrame(animate);
-            else {
-              setShowInterior(false);
-            }
-          };
-
-          animate();
-        }
-        triggerEnterBuilding();
       }
     };
 

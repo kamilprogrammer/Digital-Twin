@@ -277,13 +277,10 @@ export default function Scene({
             <InteriorModel
               city={selectedCity}
               InteriorRef={InteriorRef}
-              showInterior={showInterior}
               showStream={showStream}
               heatMap={heatMap}
-              setHeatMap={setHeatMap}
               setShowStream={setShowStream}
               setStreamValue={setStreamValue}
-              setShowInterior={setShowInterior}
             />
           </Suspense>
         </>

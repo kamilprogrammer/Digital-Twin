@@ -12,7 +12,6 @@ export default function Sidebar({ floors }: SidebarProps) {
   const selectedFloor = useStore((state) => state.selectedFloor);
   const selectedBuilding = useStore((state) => state.selectedBuilding);
   const setSelectedFloor = useStore((state) => state.setSelectedFloor);
-  const ACs = useStore((state) => state.ACs);
   const isDeveloping = useStore((state) => state.isDeveloping);
   const setIsDeveloping = useStore((state) => state.setIsDeveloping);
 
@@ -93,6 +92,7 @@ export default function Sidebar({ floors }: SidebarProps) {
             <li className="justify-center items-center">
               <button
                 onClick={(e) => {
+                  e.stopPropagation();
                   setIsDeveloping(!isDeveloping);
                 }}
                 className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
@@ -108,6 +108,7 @@ export default function Sidebar({ floors }: SidebarProps) {
             <li className="justify-center items-center">
               <button
                 onClick={(e) => {
+                  e.stopPropagation();
                   setCameraTarget(new THREE.Vector3(0, 80, 0));
                   setCameraTargetRotation(
                     new THREE.Euler(0, -(Math.PI / 2), 0)

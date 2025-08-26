@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import * as THREE from "three";
-import { AcType, Floor, Building, City } from "@/types";
+import { AcType, Building, City } from "@/types";
 
 interface StoreState {
   isDeveloping: boolean;
@@ -59,7 +59,7 @@ export const useStore = create<StoreState>((set) => ({
   setIsTransitioning: (mode: boolean) => set({ isTransitioning: mode }),
 
   ACs: [],
-  setACs: (acs) => set((state) => ({ ACs: acs })),
+  setACs: (acs) => set((state) => ({ ACs: [...state.ACs, ...acs] })),
 
   addAC: (ac) => set((state) => ({ ACs: [...state.ACs, ac] })),
   delAC: (id: number) =>

@@ -1,20 +1,18 @@
 "use client";
 import "./globals.css";
 import { Canvas } from "@react-three/fiber";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Leva } from "leva";
 //import { HeatLayer } from "./Devices/HeatMap";
 import { GLTFModels } from "./(default)/Models";
 import Sidebar from "./sidebar/sidebar";
-import router from "next/router";
 import OutSidebar from "./sidebar/out-siderbar";
 import { supabase } from "@/supabase-digital-twin";
 import { useEffect } from "react";
-import { City, Floor, Building } from "@/types";
+import { Floor, Building } from "@/types";
 import CityDialog from "./sidebar/dialog";
-import * as THREE from "three";
 import { InfinitySpin } from "react-loader-spinner";
 import { useStore } from "@/store/useStore";
 
@@ -34,7 +32,6 @@ export default function Page() {
   // Using selectedCity from store instead of local city state
 
   const [lockEnabled, setLockEnabled] = useState(false);
-  const [cameraTarget, setCameraTarget] = useState<THREE.Vector3 | null>(null);
   const [overlay, setOverlay] = useState(true);
 
   const selectedBuilding = useStore((state) => state.selectedBuilding);
@@ -42,8 +39,6 @@ export default function Page() {
 
   const selectedCity = useStore((state) => state.selectedCity);
   const setSelectedCity = useStore((state) => state.setSelectedCity);
-
-  const camera = useRef(null);
 
   // Fetching Buildings from Supabase (Baas)
   useEffect(() => {

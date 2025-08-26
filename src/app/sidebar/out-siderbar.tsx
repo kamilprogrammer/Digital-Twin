@@ -77,6 +77,7 @@ export default function OutSidebar({
             <li className="justify-center items-center">
               <button
                 onClick={(e) => {
+                  e.stopPropagation();
                   setShowDrone(!showDrone);
                 }}
                 className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
