@@ -14,7 +14,7 @@ import {
   GLTF,
   PointerLockControls as PointerLockControlsImpl,
 } from "three-stdlib";
-import { InfinitySpin } from "react-loader-spinner";
+import PulseLoader from "react-spinners/PulseLoader";
 import { City } from "@/types";
 import { useStore } from "@/store/useStore";
 
@@ -245,7 +245,7 @@ export default function Scene({
           <Suspense
             fallback={
               <Html>
-                <InfinitySpin width="200" color="#FFFFFF" />
+                <PulseLoader color="#FFFFFF" className="rotate-90" />
               </Html>
             }
           >

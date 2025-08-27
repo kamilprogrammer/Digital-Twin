@@ -12,8 +12,8 @@ import { supabase } from "@/supabase-digital-twin";
 import { useEffect } from "react";
 import { Floor, Building } from "@/types";
 import CityDialog from "./sidebar/dialog";
-import { InfinitySpin } from "react-loader-spinner";
 import { useStore } from "@/store/useStore";
+import PulseLoader from "react-spinners/PulseLoader";
 
 export default function Page() {
   const showInterior = useStore((state) => state.InteriorMode);
@@ -103,7 +103,7 @@ export default function Page() {
           {overlay && (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-400 bg-opacity-10">
               <div className="text-white text-xl flex flex-col items-center">
-                <InfinitySpin width="200" color="#FFFFFF" />
+                <PulseLoader color="#FFFFFF" className="m-4" />
                 <div>Loading 3D Models 🏢...</div>
               </div>
             </div>
