@@ -10,7 +10,6 @@ import { Float } from "@react-three/drei";
 import Camera from "../Camera/Camera";
 import DroneFollower from "../Camera/Drone";
 import InteriorModel from "../Interior/Interior";
-import { folder, useControls } from "leva";
 import {
   GLTF,
   PointerLockControls as PointerLockControlsImpl,
@@ -87,30 +86,6 @@ export default function Scene({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);*/
-
-  const controls = useControls(
-    "HeatMap - TopView",
-    () => ({
-      HeatMap: {
-        value: heatMap,
-        onChange: (value) => setHeatMap(value),
-        render: () => showInterior,
-      },
-    }),
-    [showInterior]
-  );
-
-  const { ShowDrone } = useControls(
-    {
-      Drone: folder({
-        ShowDrone: {
-          value: false,
-          render: () => !showInterior,
-        },
-      }),
-    },
-    [showInterior]
-  );
 
   const selectedBuilding = useStore((state) => state.selectedBuilding);
   const setCameraTarget = useStore((state) => state.setCameraTarget);

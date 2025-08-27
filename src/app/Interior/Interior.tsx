@@ -6,7 +6,6 @@ import { supabase } from "../../supabase-digital-twin";
 import * as THREE from "three";
 import { AC, Cctv, ACOverlay } from "../Devices";
 import type { AcType } from "../../types/AcType";
-import { useControls, folder } from "leva";
 import { City } from "@/types";
 import { useStore } from "@/store/useStore";
 
@@ -36,6 +35,7 @@ export default function InteriorModel({
   const setACs = useStore((state) => state.setACs);
   const setCameraPosition = useStore((state) => state.setCameraPosition);
   const isDeveloping = useStore((state) => state.isDeveloping);
+  const showACs = useStore((state) => state.showACs);
 
   useFrame(() => {
     // Camera State Logic
@@ -51,17 +51,17 @@ export default function InteriorModel({
   }, [ACs]);
 
   // Debug Controls
-  const { ShowAC } = useControls({
+  /*const { ShowAC } = useControls({
     AC: folder({
       ShowAC: true,
     }),
-  });
+  });*/
 
   // removing the FCUs
   useEffect(() => {
     console.log(InteriorRef.current);
 
-    if (!ShowAC) {
+    if (!showACs) {
       if (InteriorRef.current) {
         console.log("removing FCUs");
         const fcu = InteriorRef.current.getObjectByName("FCU");
@@ -81,7 +81,7 @@ export default function InteriorModel({
         }
       }
     }
-    if (ShowAC) {
+    if (showACs) {
       if (InteriorRef.current) {
         console.log("showing FCUs");
         const fcu = InteriorRef.current.getObjectByName("FCU");
@@ -114,7 +114,7 @@ export default function InteriorModel({
         }
       }
     }
-  }, [interior, InteriorRef, ShowAC]);
+  }, [interior, InteriorRef, showACs]);
   /*
   useEffect(() => {
     if (heatMap && InteriorRef.current) {
@@ -754,14 +754,14 @@ export default function InteriorModel({
         return (
           <AC
             ac={ac}
-            ShowAC={ShowAC}
+            ShowAC={showACs}
             isDeveloping={isDeveloping}
             key={ac.uniqueId}
             onUpdatePosition={onUpdatePosition}
           />
         );
       })}
-      {ShowAC &&
+      {showACs &&
         mockACs.map((ac) => (
           <ACOverlay ac={ac} isDeveloping={false} key={ac.uniqueId + ac.id} />
         ))}

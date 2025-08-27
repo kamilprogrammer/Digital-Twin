@@ -4,7 +4,6 @@ import { Canvas } from "@react-three/fiber";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Leva } from "leva";
 //import { HeatLayer } from "./Devices/HeatMap";
 import { GLTFModels } from "./(default)/Models";
 import Sidebar from "./sidebar/sidebar";
@@ -110,21 +109,6 @@ export default function Page() {
             </div>
           )}
 
-          {/* Leva Debug Panel */}
-          <div className="fixed top-0 right-0 z-50 pointer-events-auto">
-            <Leva
-              //hidden={showInterior}
-              collapsed={true}
-              theme={
-                {
-                  /*fontSizes: {
-                  root: "16px", // default is 13px
-                  toolTip: "12px",
-                  },*/
-                }
-              }
-            />
-          </div>
           {showStream && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}

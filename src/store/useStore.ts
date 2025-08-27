@@ -46,6 +46,12 @@ interface StoreState {
 
   showDrone: boolean;
   setShowDrone: (showDrone: boolean) => void;
+
+  showCameras: boolean;
+  setShowCameras: (showCameras: boolean) => void;
+
+  showACs: boolean;
+  setShowACs: (showACs: boolean) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -97,4 +103,10 @@ export const useStore = create<StoreState>((set) => ({
 
   showDrone: false,
   setShowDrone: (showDrone: boolean) => set({ showDrone: showDrone }),
+
+  showCameras: true,
+  setShowCameras: (showCameras: boolean) => set({ showCameras: showCameras }),
+
+  showACs: false,
+  setShowACs: (showACs: boolean) => set({ showACs: showACs }),
 }));

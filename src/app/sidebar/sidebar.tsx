@@ -15,8 +15,13 @@ export default function Sidebar({ floors }: SidebarProps) {
   const isDeveloping = useStore((state) => state.isDeveloping);
   const setIsDeveloping = useStore((state) => state.setIsDeveloping);
 
-  const { setCameraTarget, setCameraTargetRotation, setSelectedBuilding } =
-    useStore();
+  const {
+    setCameraTarget,
+    setCameraTargetRotation,
+    setSelectedBuilding,
+    showACs,
+    setShowACs,
+  } = useStore();
   const setShowInterior = useStore((state) => state.setInteriorMode);
   return (
     <div className="fixed top-0 left-0 z-60 w-[12vw]">
@@ -87,6 +92,20 @@ export default function Sidebar({ floors }: SidebarProps) {
               >
                 <Plus className="w-5 h-5 text-gray-500" />
                 <span className="ms-3">FCU/AC</span>
+              </button>
+            </li>
+            <li className="justify-center items-center">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowACs(!showACs);
+                }}
+                className="flex items-start w-[10vw] p-2 pl-2 justify-start text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <UserPen className="w-5 h-5 text-gray-500" />
+                <span className="ms-3">
+                  {showACs ? "Hide ACs" : "Show ACs"}
+                </span>
               </button>
             </li>
             <li className="justify-center items-center">

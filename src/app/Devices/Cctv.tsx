@@ -9,7 +9,7 @@ import { Switch } from "../../components/ui/switch";
 import { useFrame } from "@react-three/fiber";
 import { supabase } from "../../supabase-digital-twin";
 import { Button } from "../../components/ui/button";
-import { folder, useControls } from "leva";
+import { useStore } from "../../store/useStore";
 
 type Props = {
   cam: CameraType;
@@ -38,6 +38,9 @@ export default function Cctv({
   const [hovered, setHovered] = useState(false);
   const [active, setActive] = useState(cam.mode === "ACTIVE" ? true : false);
   const [Loading, setLoading] = useState(false);
+
+  const showCameras = useStore((state) => state.showCameras);
+  const GlowColor = "#FF0000";
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     const opacity = 0.07 + Math.abs(Math.sin(t * 1.2)) * 0.16; // range ~0.15 to 0.4
@@ -48,13 +51,13 @@ export default function Cctv({
   });
 
   // Debug Controls
-  const { ShowGlow, GlowColor, ShowCamera } = useControls({
+  /*const { ShowGlow, GlowColor, ShowCamera } = useControls({
     Camera: folder({
       ShowCamera: true,
       ShowGlow: true,
       GlowColor: { value: "#FF0000" }, // adds a color picker
     }),
-  });
+  });*/
 
   const Inactivate = async () => {
     setLoading(true);
@@ -120,7 +123,7 @@ export default function Cctv({
   };
 
   return (
-    ShowCamera && (
+    showCameras && (
       <PivotControls
         enabled={isDeveloping}
         anchor={[0, 0, 0]}
@@ -157,7 +160,7 @@ export default function Cctv({
         }}
       >
         {/* The soft red glow halo (FAKE volumetric light) */}
-        {!active && ShowGlow && (
+        {!active && (
           <>
             <mesh
               ref={glowRef}
