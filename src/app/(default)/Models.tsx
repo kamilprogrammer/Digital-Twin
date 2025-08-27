@@ -1,8 +1,12 @@
 "use client";
 import { useGLTF } from "@react-three/drei";
 import Scene from "./Scene";
+import { City } from "@/types";
+import { useEffect } from "react";
 
 export function GLTFModels({
+  lockEnabled,
+  city,
   heatMap,
   setHeatMap,
   showInterior,
@@ -13,19 +17,20 @@ export function GLTFModels({
   setShowStream,
   setStreamValue,
 }: {
+  lockEnabled: boolean;
+  city: City | null;
   heatMap: boolean;
   setHeatMap: React.Dispatch<React.SetStateAction<boolean>>;
   showInterior: boolean;
-  setShowInterior: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowInterior: (showInterior: boolean) => void;
   isTransitioning: boolean;
   setIsTransitioning: (b: boolean) => void;
   showStream: boolean;
   setShowStream: React.Dispatch<React.SetStateAction<boolean>>;
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const dubai = useGLTF("/dubai.glb");
+  const dubai = useGLTF(`/${city?.title}.glb`);
   const drone = useGLTF("/drone.glb");
-
   return (
     <Scene
       dubai={dubai}
@@ -39,6 +44,7 @@ export function GLTFModels({
       showStream={showStream}
       setShowStream={setShowStream}
       setStreamValue={setStreamValue}
+      lockEnabled={lockEnabled}
     />
   );
 }

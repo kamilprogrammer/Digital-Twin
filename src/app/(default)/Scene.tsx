@@ -7,17 +7,19 @@ import { Button } from "../../components/ui/button";
 import { Html, Text } from "@react-three/drei";
 import { Sky } from "@react-three/drei";
 import { Float } from "@react-three/drei";
-import Camera from "./Camera/Camera";
-import DroneFollower from "./Camera/Drone";
-import InteriorModel from "./Interior/Interior";
-import { folder, useControls } from "leva";
-import "../globals.css";
+import Camera from "../Camera/Camera";
+import DroneFollower from "../Camera/Drone";
+import InteriorModel from "../Interior/Interior";
 import {
   GLTF,
   PointerLockControls as PointerLockControlsImpl,
 } from "three-stdlib";
+import PulseLoader from "react-spinners/PulseLoader";
+import { City } from "@/types";
+import { useStore } from "@/store/useStore";
 
 export default function Scene({
+  lockEnabled,
   dubai,
   drone,
   showStream,
@@ -30,6 +32,7 @@ export default function Scene({
   isTransitioning,
   setIsTransitioning,
 }: {
+  lockEnabled: boolean;
   dubai: GLTF;
   drone: GLTF;
   showStream: boolean;
@@ -38,10 +41,12 @@ export default function Scene({
   setShowStream: React.Dispatch<React.SetStateAction<boolean>>;
   setStreamValue: React.Dispatch<React.SetStateAction<string>>;
   showInterior: boolean;
-  setShowInterior: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowInterior: (showInterior: boolean) => void;
   isTransitioning: boolean;
   setIsTransitioning: (b: boolean) => void;
 }) {
+  const selectedCity = useStore((state) => state.selectedCity);
+
   const DubaiRef = useRef<THREE.Object3D | null>(null);
   //const DroneRef = useRef<THREE.Object3D | null>(null);
   const buttonRef = useRef<THREE.Mesh | null>(null);
@@ -49,32 +54,11 @@ export default function Scene({
   const cameraRef = useRef<PointerLockControlsImpl>(null);
   const DroneRef = useRef<THREE.Object3D | null>(null);
   const [isLookingAtButton, setIsLookingAtButton] = useState(false);
-
+  const InteriorRef = useRef<THREE.Object3D | null>(null);
   const { camera } = useThree();
-
-  function triggerEnterBuilding() {
-    const targetPosition = new THREE.Vector3(1010, 10, 20);
-    let t = 0;
-    const from = camera.position.clone();
-    const to = targetPosition.clone();
-
-    const animate = () => {
-      t += 0.01;
-      camera.position.lerpVectors(from, to, t);
-      const targetEuler = new THREE.Euler(0, Math.PI / 2, 0); // yaw: 90 degrees
-      const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
-
-      camera.quaternion.slerp(targetQuaternion, 0.1); // 0.1 is interpolation speed
-      if (t < 1) requestAnimationFrame(animate);
-      else {
-        setIsTransitioning(true);
-        setTimeout(() => setShowInterior(true), 1000); // Midway: switch content
-        setTimeout(() => setIsTransitioning(false), 2000); // Finish transition
-      }
-    };
-
-    animate();
-  }
+  const setCameraPosition = useStore((state) => state.setCameraPosition);
+  const selectedFloor = useStore((state) => state.selectedFloor);
+  const cameraPosition = useStore((state) => state.cameraPosition);
 
   useFrame(() => {
     if (!buttonRef.current) return;
@@ -91,7 +75,7 @@ export default function Scene({
     lookingRef.current = isLooking;
   });
 
-  useEffect(() => {
+  /*useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "e" && lookingRef.current && !showInterior) {
         triggerEnterBuilding();
@@ -101,31 +85,46 @@ export default function Scene({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, []);*/
 
-  const controls = useControls(
-    "HeatMap - TopView",
-    () => ({
-      HeatMap: {
-        value: heatMap,
-        onChange: (value) => setHeatMap(value),
-        render: () => showInterior,
-      },
-    }),
-    [showInterior]
-  );
+  const selectedBuilding = useStore((state) => state.selectedBuilding);
+  const setCameraTarget = useStore((state) => state.setCameraTarget);
+  const { cameraTarget, cameraTargetRotation } = useStore();
+  const showDrone = useStore((state) => state.showDrone);
 
-  const { ShowDrone } = useControls(
-    {
-      Drone: folder({
-        ShowDrone: {
-          value: false,
-          render: () => !showInterior,
-        },
-      }),
-    },
-    [showInterior]
-  );
+  useEffect(() => {
+    console.log(cameraTarget);
+    if (cameraTarget && cameraTarget != null) {
+      setIsTransitioning(true);
+    }
+  }, [cameraTarget]);
+
+  function CameraController() {
+    const camera = useThree((state) => state.camera);
+    let t = 0;
+    let to: THREE.Vector3;
+    const from = camera.position.clone();
+    if (cameraTarget) {
+      to = cameraTarget.clone();
+    }
+    const animate = () => {
+      t += 0.01;
+      camera.position.lerpVectors(from, to, t);
+      const targetQuaternion = new THREE.Quaternion().setFromEuler(
+        cameraTargetRotation
+      );
+
+      camera.quaternion.slerp(targetQuaternion, 0.05);
+      if (t < 1 && to != null) requestAnimationFrame(animate);
+      else {
+        setTimeout(() => setIsTransitioning(false), 500);
+        setTimeout(() => setCameraTarget(null), 500);
+      }
+    };
+
+    animate();
+    return null;
+  }
 
   return (
     <>
@@ -145,19 +144,20 @@ export default function Scene({
                 size="lg"
                 className="justify-center items-center -ml-28 -mt-16"
               >
-                {"🏢 Kamel Rifai's Building"}
+                {"🏢 Machine Sense IOT's Building"}
               </Button>
             </Html>
           </mesh>
 
           {/* “Press E” prompt (only when aiming and not during transition) */}
-          {isLookingAtButton && !isTransitioning && (
+          {/*{isLookingAtButton && !isTransitioning && (
             <Html position={[510, 110, 56]} distanceFactor={100}>
               <Button variant="default" size="lg">
                 Press <b>E</b> to enter
               </Button>
             </Html>
-          )}
+          )}*/}
+          {isTransitioning && <CameraController />}
 
           {/* Labels */}
           <Text
@@ -193,9 +193,16 @@ export default function Scene({
         </>
       )}
       {/* Drone */}
-      <Camera interior={showInterior} cameraRef={cameraRef} heatMap={heatMap} />
 
-      {ShowDrone && !showInterior && (
+      {
+        <Camera
+          lockEnabled={lockEnabled}
+          interior={showInterior}
+          cameraRef={cameraRef}
+          heatMap={heatMap}
+        />
+      }
+      {showDrone && !showInterior && (
         <Float
           speed={1}
           floatIntensity={0.1}
@@ -212,17 +219,46 @@ export default function Scene({
       <directionalLight position={[-10, -10, -10]} intensity={2} />
       {/* Interior Model */}
       {showInterior && (
-        <Suspense fallback={null}>
-          <InteriorModel
-            showInterior={showInterior}
-            showStream={showStream}
-            heatMap={heatMap}
-            setHeatMap={setHeatMap}
-            setShowStream={setShowStream}
-            setStreamValue={setStreamValue}
-            setShowInterior={setShowInterior}
-          />
-        </Suspense>
+        <>
+          <mesh
+            position={InteriorRef.current?.position.clone().setY(130).setX(140)}
+            rotation={[0, Math.PI / 2, 0]}
+          >
+            <planeGeometry args={[250, 200]} />
+            <meshBasicMaterial
+              opacity={0.1}
+              transparent
+              color="#fff"
+              depthTest={false}
+              depthWrite={false}
+            />
+            <Text
+              fontSize={100}
+              lineHeight={1.2}
+              anchorX="center"
+              color={"black"}
+              font="/cairo.ttf"
+            >
+              {selectedFloor}
+            </Text>
+          </mesh>
+          <Suspense
+            fallback={
+              <Html>
+                <PulseLoader color="#FFFFFF" className="rotate-90" />
+              </Html>
+            }
+          >
+            <InteriorModel
+              city={selectedCity}
+              InteriorRef={InteriorRef}
+              showStream={showStream}
+              heatMap={heatMap}
+              setShowStream={setShowStream}
+              setStreamValue={setStreamValue}
+            />
+          </Suspense>
+        </>
       )}
     </>
   );

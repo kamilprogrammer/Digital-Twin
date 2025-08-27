@@ -10,6 +10,8 @@ export type CameraType = {
   username?: string;
   password?: string;
   notes?: string;
+  floor: number;
+  buildingId?: number;
   position: {
     x: number;
     y: number;

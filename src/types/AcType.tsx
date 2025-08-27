@@ -6,7 +6,6 @@ export type AcType = {
   mac?: string;
   model?: string;
   vendor?: string;
-
   notes?: string;
   position: {
     x: number;
@@ -18,6 +17,8 @@ export type AcType = {
     y: number;
     z: number;
   };
+  floorId: number;
+  buildingId?: number;
   mode?: string;
   show: boolean;
 };
